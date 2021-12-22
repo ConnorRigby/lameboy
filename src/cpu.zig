@@ -1,5 +1,13 @@
 const std = @import("std");
 
+pub const RegisterReference = extern union {
+    S: extern struct {
+        rx: u8,
+        ry: u8,
+    },
+    RR: u16,
+};
+
 pub const CPU = struct {
     /// Program Counter
     PC: u16,
