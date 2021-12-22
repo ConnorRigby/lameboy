@@ -89,6 +89,32 @@ pub fn step(lameboy: *Lameboy) !void {
             break :blk;
         },
 
+        // INC B
+        0x04 => blk: {
+            lameboy.PC += 1;
+            lameboy.tcycles += 4;
+            lameboy.AF.S.F.c = 0;
+
+            // set half-carry if we carried from one nybl to the other
+            if (((lameboy.BC.S.B & 0xf) + (1 & 0xf)) * 0x10 == 0x10) {
+                lameboy.AF.S.F.h = 1;
+            } else {
+                lameboy.AF.S.F.h = 0;
+            }
+
+            lameboy.BC.S.B += 1;
+
+            // set z if resulting sum was 0
+            if (lameboy.BC.S.B == 0) {
+                lameboy.AF.S.F.z = 1;
+            } else {
+                lameboy.AF.S.F.z = 0;
+            }
+
+            std.log.info("INC B", .{});
+            break :blk;
+        },
+
         // DEC B
         0x05 => blk: {
             lameboy.PC += 1;
@@ -96,7 +122,7 @@ pub fn step(lameboy: *Lameboy) !void {
             lameboy.AF.S.F.c = 1;
 
             // set half-carry if we carried from one nybl to the other
-            if (((lameboy.BC.S.B & 0xf) - (1 & 0xf)) * 0x10 == 0x10) {
+            if (((lameboy.BC.S.B & 0xf) -% (1 & 0xf)) *% 0x10 == 0x10) {
                 lameboy.AF.S.F.h = 1;
             } else {
                 lameboy.AF.S.F.h = 0;
@@ -151,6 +177,32 @@ pub fn step(lameboy: *Lameboy) !void {
             break :blk;
         },
 
+        // DEC C
+        0x0D => blk: {
+            lameboy.PC += 1;
+            lameboy.tcycles += 4;
+            lameboy.AF.S.F.c = 1;
+
+            // set half-carry if we carried from one nybl to the other
+            if (((lameboy.BC.S.C & 0xf) -% (1 & 0xf)) *% 0x10 == 0x10) {
+                lameboy.AF.S.F.h = 1;
+            } else {
+                lameboy.AF.S.F.h = 0;
+            }
+
+            lameboy.BC.S.C -%= 1;
+
+            // set z if resulting sum was 0
+            if (lameboy.BC.S.C == 0) {
+                lameboy.AF.S.F.z = 1;
+            } else {
+                lameboy.AF.S.F.z = 0;
+            }
+
+            std.log.info("DEC C", .{});
+            break :blk;
+        },
+
         // LD C,d8
         0x0E => blk: {
             lameboy.PC += 1;
@@ -186,6 +238,42 @@ pub fn step(lameboy: *Lameboy) !void {
             break :blk;
         },
 
+        // DEC D
+        0x15 => blk: {
+            lameboy.PC += 1;
+            lameboy.tcycles += 4;
+            lameboy.AF.S.F.c = 1;
+
+            // set half-carry if we carried from one nybl to the other
+            if (((lameboy.DE.S.D & 0xf) -% (1 & 0xf)) *% 0x10 == 0x10) {
+                lameboy.AF.S.F.h = 1;
+            } else {
+                lameboy.AF.S.F.h = 0;
+            }
+
+            lameboy.DE.S.D -%= 1;
+
+            // set z if resulting sum was 0
+            if (lameboy.DE.S.D == 0) {
+                lameboy.AF.S.F.z = 1;
+            } else {
+                lameboy.AF.S.F.z = 0;
+            }
+
+            std.log.info("DEC D", .{});
+            break :blk;
+        },
+
+        // LD D,d8
+        0x16 => blk: {
+            lameboy.PC += 1;
+            lameboy.tcycles += 8;
+            lameboy.DE.S.D = lameboy.memory.Raw[lameboy.PC];
+            lameboy.PC += 1;
+            std.log.info("LD D,${x:0>2}", .{lameboy.DE.S.D});
+            break :blk;
+        },
+
         // RLA
         0x17 => blk: {
             lameboy.PC += 1;
@@ -206,12 +294,58 @@ pub fn step(lameboy: *Lameboy) !void {
             break :blk;
         },
 
+        // JR r8
+        0x18 => blk: {
+            lameboy.PC += 1;
+            const r8: i8 = @bitCast(i8, lameboy.memory.Raw[lameboy.PC]);
+            lameboy.PC += 1;
+
+            std.log.info("JR {d} (true)", .{r8});
+            lameboy.PC +%= @bitCast(u16, @intCast(i16, r8));
+            break :blk;
+        },
+
         // LD A,(DE)
         0x1A => blk: {
             lameboy.PC += 1;
             lameboy.tcycles += 8;
             lameboy.AF.S.A = lameboy.memory.Raw[lameboy.DE.DE];
             std.log.info("LD A,(DE)", .{});
+            break :blk;
+        },
+
+        // DEC E
+        0x1D => blk: {
+            lameboy.PC += 1;
+            lameboy.tcycles += 4;
+            lameboy.AF.S.F.c = 1;
+
+            // set half-carry if we carried from one nybl to the other
+            if (((lameboy.DE.S.E & 0xf) -% (1 & 0xf)) *% 0x10 == 0x10) {
+                lameboy.AF.S.F.h = 1;
+            } else {
+                lameboy.AF.S.F.h = 0;
+            }
+
+            lameboy.DE.S.E -%= 1;
+
+            // set z if resulting sum was 0
+            if (lameboy.DE.S.E == 0) {
+                lameboy.AF.S.F.z = 1;
+            } else {
+                lameboy.AF.S.F.z = 0;
+            }
+
+            std.log.info("DEC E", .{});
+            break :blk;
+        },
+
+        // LD D,d8
+        0x1E => blk: {
+            lameboy.PC += 1;
+            lameboy.DE.S.D = lameboy.memory.Raw[lameboy.PC];
+            lameboy.PC += 1;
+            std.log.info("LD D,${x:0>2}", .{lameboy.DE.S.D});
             break :blk;
         },
 
@@ -268,6 +402,50 @@ pub fn step(lameboy: *Lameboy) !void {
             lameboy.tcycles += 8;
             lameboy.HL.HL += 1;
             std.log.info("INC HL", .{});
+            break :blk;
+        },
+
+        // INC H
+        0x24 => blk: {
+            lameboy.PC += 1;
+            lameboy.tcycles += 4;
+            lameboy.AF.S.F.c = 1;
+
+            // set half-carry if we carried from one nybl to the other
+            if (((lameboy.HL.S.H & 0xf) +% (1 & 0xf)) *% 0x10 == 0x10) {
+                lameboy.AF.S.F.h = 1;
+            } else {
+                lameboy.AF.S.F.h = 0;
+            }
+
+            lameboy.HL.S.H -%= 1;
+
+            // set z if resulting sum was 0
+            if (lameboy.HL.S.H == 0) {
+                lameboy.AF.S.F.z = 1;
+            } else {
+                lameboy.AF.S.F.z = 0;
+            }
+
+            std.log.info("INC H", .{});
+            break :blk;
+        },
+
+        0x28 => blk: {
+            lameboy.PC += 1;
+            const r8: i8 = @bitCast(i8, lameboy.memory.Raw[lameboy.PC]);
+            lameboy.PC += 1;
+
+            if (lameboy.AF.S.F.z == 0) {
+                lameboy.tcycles += 12;
+                std.log.info("JR Z,{d} (true)", .{r8});
+                // std.log.info("jr before PC={X:0>4}", .{lameboy.PC});
+                lameboy.PC +%= @bitCast(u16, @intCast(i16, r8));
+                // std.log.info("jr after PC={X:0>4}", .{lameboy.PC});
+            } else {
+                lameboy.tcycles += 8;
+                std.log.info("JR Z,{d} (false)", .{r8});
+            }
             break :blk;
         },
 
@@ -334,12 +512,47 @@ pub fn step(lameboy: *Lameboy) !void {
             break :blk;
         },
 
+        // LD B,D
+        0x42 => blk: {
+            lameboy.PC += 1;
+            lameboy.tcycles += 4;
+            lameboy.BC.S.B = lameboy.DE.S.D;
+            std.log.info("LD B,D", .{});
+            break :blk;
+        },
+
+        // LD B,H
+        0x44 => blk: {
+            lameboy.PC += 1;
+            lameboy.tcycles += 4;
+            lameboy.BC.S.B = lameboy.HL.S.H;
+            break :blk;
+        },
+
         // LD C,A
         0x4F => blk: {
             lameboy.PC += 1;
             lameboy.tcycles += 4;
             lameboy.BC.S.C = lameboy.AF.S.A;
             std.log.info("LD C,A", .{});
+            break :blk;
+        },
+
+        // LD D,A
+        0x57 => blk: {
+            lameboy.PC += 1;
+            lameboy.tcycles += 4;
+            lameboy.DE.S.D = lameboy.AF.S.A;
+            std.log.info("LD D,A", .{});
+            break :blk;
+        },
+
+        // LD H,A
+        0x67 => blk: {
+            lameboy.PC += 1;
+            lameboy.tcycles += 4;
+            lameboy.HL.S.H = lameboy.AF.S.A;
+            std.log.info("LD H,A", .{});
             break :blk;
         },
 
@@ -358,6 +571,47 @@ pub fn step(lameboy: *Lameboy) !void {
             lameboy.tcycles += 4;
             lameboy.AF.S.A = lameboy.DE.S.E;
             std.log.info("LD A,E", .{});
+            break :blk;
+        },
+
+        // LD A,H
+        0x7C => blk: {
+            lameboy.PC += 1;
+            lameboy.tcycles += 4;
+            lameboy.AF.S.A = lameboy.HL.S.H;
+            std.log.info("LD A,H", .{});
+            break :blk;
+        },
+
+        // SUB B
+        0x90 => blk: {
+            lameboy.PC += 1;
+            lameboy.tcycles += 4;
+
+            const cp: u8 = lameboy.AF.S.A -% lameboy.BC.S.B;
+            lameboy.AF.S.F.n = 1;
+
+            if (cp == 0) {
+                lameboy.AF.S.F.z = 1;
+            } else {
+                lameboy.AF.S.F.z = 0;
+            }
+
+            if (((cp & 0xf) -% (1 & 0xf)) *% 0x10 == 0x10) {
+                lameboy.AF.S.F.h = 1;
+            } else {
+                lameboy.AF.S.F.h = 0;
+            }
+
+            if (lameboy.BC.S.B > lameboy.AF.S.A) {
+                lameboy.AF.S.F.c = 1;
+            } else {
+                lameboy.AF.S.F.c = 0;
+            }
+
+            lameboy.AF.S.A = cp;
+
+            std.log.info("SUB B", .{});
             break :blk;
         },
 
@@ -532,6 +786,17 @@ pub fn step(lameboy: *Lameboy) !void {
             break :blk;
         },
 
+        // LDH A,(a8)
+        0xF0 => blk: {
+            lameboy.PC += 1;
+            lameboy.tcycles += 12;
+
+            const a8: u16 = lameboy.memory.Raw[lameboy.PC];
+            lameboy.AF.S.A = lameboy.memory.Raw[0xff00 + a8];
+            std.log.info("LDH A,(${x:0>2})", .{a8});
+            break :blk;
+        },
+
         // CP d8
         0xFE => blk: {
             lameboy.PC += 1;
@@ -548,7 +813,7 @@ pub fn step(lameboy: *Lameboy) !void {
                 lameboy.AF.S.F.z = 0;
             }
 
-            if (((cp & 0xf) - (1 & 0xf)) * 0x10 == 0x10) {
+            if (((cp & 0xf) -% (1 & 0xf)) *% 0x10 == 0x10) {
                 lameboy.AF.S.F.h = 1;
             } else {
                 lameboy.AF.S.F.h = 0;
