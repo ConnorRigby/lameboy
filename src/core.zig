@@ -6,11 +6,15 @@ const RegisterReference = cpu.RegisterReference;
 
 const Memory = @import("memory.zig").Memory;
 
+const debugger = @import("debugger.zig");
+const Debugger = debugger.Debugger;
+
 pub const RuntimeError = error{ InstructionNotImplemented, YouSuck };
 
 pub const Core = struct {
     cpu: CPU,
     memory: Memory,
+    debugger: Debugger,
     tCycles: u64,
     halt: bool,
     debugStop: bool,
@@ -19,10 +23,15 @@ pub const Core = struct {
         return Core{
             .cpu = CPU.init(),
             .memory = Memory.init(),
+            .debugger = Debugger.init(),
             .tCycles = 0,
             .halt = false,
             .debugStop = false,
         };
+    }
+
+    pub fn startDebugger(core: *Core) !void {
+        try core.debugger.start(core);
     }
 
     pub fn nop(core: *Core) void {

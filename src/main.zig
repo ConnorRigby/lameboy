@@ -3,6 +3,7 @@ const Core = @import("core.zig").Core;
 
 pub fn main() anyerror!void {
     var core = Core.init();
+    _ = try core.startDebugger();
 
     const bootrom = try std.fs.cwd().openFile(
         "DMG_ROM.bin",
