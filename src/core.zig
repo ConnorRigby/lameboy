@@ -28,7 +28,7 @@ pub const Core = struct {
     pub fn nop(core: *Core) void {
         core.cpu.PC += 1;
         core.tCycles += 4;
-        std.log.info("NOP", .{});
+        // std.log.info("NOP", .{});
         core.halt = true;
     }
 
@@ -36,7 +36,7 @@ pub const Core = struct {
         core.cpu.PC += 1;
         core.tCycles += 4;
 
-        r.* += 1;
+        r.* +%= 1;
         core.cpu.AF.S.F.n = 0;
         core.cpu.AF.S.F.z = 0;
         core.cpu.AF.S.F.h = 0;
@@ -69,6 +69,8 @@ pub const Core = struct {
 
         if (r.* == 0)
             core.cpu.AF.S.F.z = 1;
+
+        // std.log.info("dec_r result: ${x:0>2} ${x:0>2}", .{r.*, core.cpu.DE.S.D});
     }
 
     pub fn sub_r(core: *Core, r: *u8) void {
@@ -94,7 +96,7 @@ pub const Core = struct {
         core.cpu.PC += 1;
         core.tCycles += 8;
 
-        const d8: u8 = core.memory.Raw[rr];
+        const d8: u8 = core.memory.read8(rr);
         const a: u8 = core.cpu.AF.S.A;
         core.cpu.AF.S.A += d8;
         if ((a + d8) == 0)
@@ -108,7 +110,7 @@ pub const Core = struct {
     pub fn ld_r_d8(core: *Core, r: *u8) void {
         core.cpu.PC += 1;
         core.tCycles += 8;
-        r.* = core.memory.Raw[core.cpu.PC];
+        r.* = core.memory.read8(core.cpu.PC);
         core.cpu.PC += 1;
     }
 
@@ -122,10 +124,10 @@ pub const Core = struct {
         core.cpu.PC += 1;
         core.tCycles += 12;
 
-        const msb: u8 = core.memory.Raw[core.cpu.PC];
+        const msb: u8 = core.memory.read8(core.cpu.PC);
         core.cpu.PC += 1;
 
-        const lsb: u8 = core.memory.Raw[core.cpu.PC];
+        const lsb: u8 = core.memory.read8(core.cpu.PC);
         core.cpu.PC += 1;
 
         rr.* = (@as(u16, lsb) << 8) | msb;
@@ -135,29 +137,29 @@ pub const Core = struct {
     pub fn ld_r_rr(core: *Core, r: *u8, r16: u16) void {
         core.cpu.PC += 1;
         core.tCycles += 8;
-        r.* = core.memory.Raw[r16];
+        r.* = core.memory.read8(r16);
     }
 
     // load r into memory at address rr
     pub fn ld_rr_r(core: *Core, r16: u16, r: u8) void {
         core.cpu.PC += 1;
         core.tCycles += 8;
-        core.memory.Raw[r16] = r;
+        core.memory.write8(r16, r);
     }
 
     pub fn ld_hli_r(core: *Core, r: u8) void {
         core.cpu.PC += 1;
         core.tCycles += 8;
-        core.memory.Raw[core.cpu.HL.HL] = r;
-        core.cpu.HL.HL += 1;
+        core.memory.write8(core.cpu.HL.HL, r);
+        core.cpu.HL.HL +%= 1;
     }
 
     pub fn ld_hld_r(core: *Core, r: u8) void {
         core.cpu.PC += 1;
         core.tCycles += 8;
 
-        core.memory.Raw[core.cpu.HL.HL] = r;
-        core.cpu.HL.HL -= 1;
+        core.memory.write8(core.cpu.HL.HL, r);
+        core.cpu.HL.HL -%= 1;
     }
 
     // i stole this implementation from sameboy.
@@ -183,14 +185,14 @@ pub const Core = struct {
         core.cpu.PC += 1;
         core.tCycles += 8;
 
-        const d8: u8 = core.memory.Raw[core.cpu.PC];
+        const d8: u8 = core.memory.read8(core.cpu.PC);
         core.cpu.PC += 1;
         const a: u8 = core.cpu.AF.S.A;
 
         core.cpu.AF.AF &= 0xFF00;
         core.cpu.AF.S.F.n = 1;
 
-        std.log.info("a=${x:0>2}", .{a});
+        // std.log.info("a=${x:0>2}", .{a});
 
         if (a == d8)
             core.cpu.AF.S.F.z = 1;
@@ -206,7 +208,7 @@ pub const Core = struct {
         core.cpu.PC += 1;
         core.tCycles += 8;
 
-        const d8: u8 = core.memory.Raw[rr];
+        const d8: u8 = core.memory.read8(rr);
         const a: u8 = core.cpu.AF.S.A;
 
         core.cpu.AF.AF &= 0xFF00;
@@ -226,11 +228,11 @@ pub const Core = struct {
         core.cpu.PC += 1;
         core.tCycles += 16;
 
-        const msb: u8 = core.memory.Raw[core.cpu.SP];
+        const msb: u8 = core.memory.read8(core.cpu.SP);
         core.cpu.SP += 1;
         rr.*.S.ry = msb;
 
-        const lsb: u8 = core.memory.Raw[core.cpu.SP];
+        const lsb: u8 = core.memory.read8(core.cpu.SP);
         core.cpu.SP += 1;
         rr.*.S.rx = lsb;
     }
@@ -240,41 +242,41 @@ pub const Core = struct {
         core.tCycles += 16;
 
         core.cpu.SP -= 1;
-        core.memory.Raw[core.cpu.SP] = rr.*.S.rx;
+        core.memory.write8(core.cpu.SP, rr.*.S.rx);
 
         core.cpu.SP -= 1;
-        core.memory.Raw[core.cpu.SP] = rr.*.S.ry;
+        core.memory.write8(core.cpu.SP, rr.*.S.ry);
     }
 
     pub fn call(core: *Core) void {
         core.cpu.PC += 1;
         core.tCycles += 24;
 
-        const msb: u8 = core.memory.Raw[core.cpu.PC];
+        const msb: u8 = core.memory.read8(core.cpu.PC);
         core.cpu.PC += 1;
 
-        const lsb: u8 = core.memory.Raw[core.cpu.PC];
+        const lsb: u8 = core.memory.read8(core.cpu.PC);
         core.cpu.PC += 1;
 
         const nn: u16 = (@as(u16, lsb) << 8) | msb;
 
         core.cpu.SP -= 1;
-        core.memory.Raw[core.cpu.SP] = @intCast(u8, core.cpu.PC >> 8);
+        core.memory.write8(core.cpu.SP, @intCast(u8, core.cpu.PC >> 8));
         core.cpu.SP -= 1;
-        core.memory.Raw[core.cpu.SP] = @truncate(u8, core.cpu.PC);
+        core.memory.write8(core.cpu.SP, @truncate(u8, core.cpu.PC));
 
         core.cpu.PC = nn;
-        std.log.info("CALL ${x:0>4}", .{nn});
+        // std.log.info("CALL ${x:0>4}", .{nn});
     }
 
     pub fn ret(core: *Core) void {
         core.cpu.PC += 1;
         core.tCycles += 16;
 
-        const msb: u8 = core.memory.Raw[core.cpu.SP];
+        const msb: u8 = core.memory.read8(core.cpu.SP);
         core.cpu.SP += 1;
 
-        const lsb: u8 = core.memory.Raw[core.cpu.SP];
+        const lsb: u8 = core.memory.read8(core.cpu.SP);
         core.cpu.SP += 1;
 
         const nn: u16 = (@as(u16, lsb) << 8) | msb;
@@ -283,44 +285,55 @@ pub const Core = struct {
 
     pub fn jr_r8(core: *Core) void {
         core.cpu.PC += 1;
-        const r8: i8 = @bitCast(i8, core.memory.Raw[core.cpu.PC]);
+        // const r8: i8 = @bitCast(i8, core.memory.Raw[core.cpu.PC]);
+        const r8: i8 = core.memory.readi8(core.cpu.PC);
         core.cpu.PC += 1;
         core.cpu.PC +%= @bitCast(u16, @intCast(i16, r8));
     }
 
     pub fn jr_nz_r8(core: *Core) void {
         core.cpu.PC += 1;
-        const r8: i8 = @bitCast(i8, core.memory.Raw[core.cpu.PC]);
+        // const r8: i8 = @bitCast(i8, core.memory.Raw[core.cpu.PC]);
+        const r8: i8 = core.memory.readi8(core.cpu.PC);
         core.cpu.PC += 1;
 
         if (core.cpu.AF.S.F.z != 1) {
             core.tCycles += 12;
-            std.log.info("JR NZ,{d} (true)", .{r8});
+            // std.log.info("JR NZ,{d} (true) f={B:0>1}", .{r8, core.cpu.AF.S.F});
             core.cpu.PC +%= @bitCast(u16, @intCast(i16, r8));
         } else {
             core.tCycles += 8;
-            std.log.info("JR NZ,{d} (false)", .{r8});
+            // std.log.info("JR NZ,{d} (false) f={B:0>1}", .{r8, core.cpu.AF.S.F});
         }
     }
 
     pub fn jr_z_r8(core: *Core) void {
         core.cpu.PC += 1;
-        const r8: i8 = @bitCast(i8, core.memory.Raw[core.cpu.PC]);
+        // const r8: i8 = @bitCast(i8, core.memory.Raw[core.cpu.PC]);
+        const r8: i8 = core.memory.readi8(core.cpu.PC);
         core.cpu.PC += 1;
 
         if (core.cpu.AF.S.F.z == 1) {
             core.tCycles += 12;
-            std.log.info("JR Z,{d} (true)", .{r8});
+            // std.log.info("JR Z,{d} (true)", .{r8});
             core.cpu.PC +%= @bitCast(u16, @intCast(i16, r8));
         } else {
             core.tCycles += 8;
-            std.log.info("JR Z,{d} (false)", .{r8});
+            // std.log.info("JR Z,{d} (false)", .{r8});
         }
     }
 
+    pub fn xor_a_r(core: *Core, value: u8) void {
+        core.cpu.PC += 1;
+        core.tCycles += 1;
+        core.cpu.AF.S.A ^= value;
+
+        if (core.cpu.AF.S.A == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
     pub fn step(gb: *Core) !void {
-        std.log.info("\tPC=0x{x:0>2} OP=0x{x:0>2}", .{ gb.cpu.PC, gb.memory.Raw[gb.cpu.PC] });
-        // try break_step();
+        // std.log.info("\tPC=0x{x:0>2} OP=0x{x:0>2}", .{ gb.cpu.PC, gb.memory.Raw[gb.cpu.PC] });
 
         switch (gb.memory.Raw[gb.cpu.PC]) {
             // NOP
@@ -368,8 +381,8 @@ pub const Core = struct {
             // DEC E
             0x1D => dec_r(gb, &gb.cpu.DE.S.E),
 
-            // LD D,d8
-            0x1E => ld_r_d8(gb, &gb.cpu.DE.S.D),
+            // LD E,d8
+            0x1E => ld_r_d8(gb, &gb.cpu.DE.S.E),
 
             // JR NZ,r8
             0x20 => jr_nz_r8(gb),
@@ -441,18 +454,7 @@ pub const Core = struct {
             0x90 => sub_r(gb, &gb.cpu.BC.S.B),
 
             // XOR A
-            0xAF => blk: {
-                gb.cpu.PC += 1;
-                gb.tCycles += 1;
-                const A: u8 = gb.cpu.AF.S.A;
-                const value: u8 = A ^ A;
-                gb.cpu.AF.S.A = value;
-                if (value == 0) {
-                    gb.cpu.AF.S.F.z = 1;
-                }
-                std.log.info("XOR A", .{});
-                break :blk;
-            },
+            0xAF => xor_a_r(gb, gb.cpu.AF.S.A),
 
             // CP (HL)
             0xBE => cp_rr(gb, gb.cpu.HL.HL),
@@ -479,7 +481,7 @@ pub const Core = struct {
                         gb.cpu.AF.S.F.n = 0;
 
                         const carry: u1 = gb.cpu.AF.S.F.c;
-                        std.log.info("RL C before: {x:0>1} {b:0>8}", .{ gb.cpu.AF.S.F.c, gb.cpu.BC.S.C });
+                        // std.log.info("RL C before: {x:0>1} {b:0>8}", .{ gb.cpu.AF.S.F.c, gb.cpu.BC.S.C });
                         gb.cpu.AF.S.F.c = @intCast(u1, ((gb.cpu.BC.S.C >> 7) & 0x01));
                         gb.cpu.BC.S.C <<= 1;
 
@@ -493,7 +495,7 @@ pub const Core = struct {
                             gb.cpu.AF.S.F.z = 0;
                         }
 
-                        std.log.info("RL C after: {x:0>1} {b:0>8} {x:0>1} ", .{ gb.cpu.AF.S.F.c, gb.cpu.BC.S.C, carry });
+                        // std.log.info("RL C after: {x:0>1} {b:0>8} {x:0>1} ", .{ gb.cpu.AF.S.F.c, gb.cpu.BC.S.C, carry });
                         break :cblk;
                     },
                     // BIT 7, H
@@ -503,13 +505,13 @@ pub const Core = struct {
                         gb.cpu.AF.S.F.h = 1;
                         gb.cpu.AF.S.F.n = 0;
                         gb.cpu.AF.S.F.z = @intCast(u1, ((gb.cpu.HL.S.H >> 7) & 0x01));
-                        std.log.info("BIT 7, H {B:0>1}", .{gb.cpu.AF.S.F});
+                        // std.log.info("BIT 7, H {B:0>1}", .{gb.cpu.AF.S.F});
                         break :cblk;
                     },
                     else => cblk: {
                         gb.halt = true;
-                        std.log.info("Unimplemented CB Instruction 0x{X}", .{gb.memory.Raw[gb.cpu.PC]});
-                        std.log.info("Flags={B:0>1}", .{gb.cpu.AF.S.F});
+                        // std.log.info("Unimplemented CB Instruction 0x{X}", .{gb.memory.Raw[gb.cpu.PC]});
+                        // std.log.info("Flags={B:0>1}", .{gb.cpu.AF.S.F});
                         break :cblk return RuntimeError.InstructionNotImplemented;
                     },
                 }
@@ -523,10 +525,10 @@ pub const Core = struct {
             0xE0 => blk: {
                 gb.cpu.PC += 1;
                 gb.tCycles += 12;
-                const a8: u16 = gb.memory.Raw[gb.cpu.PC];
+                const a8: u16 = gb.memory.read8(gb.cpu.PC);
                 gb.cpu.PC += 1;
-                gb.memory.Raw[0xFF00 + a8] = gb.cpu.AF.S.A;
-                std.log.info("LD ($FF00+${x:0>2}),A", .{a8});
+                gb.memory.write8(0xFF00 + a8, gb.cpu.AF.S.A);
+                // std.log.info("LD ($FF00+${x:0>2}),A", .{a8});
                 break :blk;
             },
 
@@ -534,8 +536,8 @@ pub const Core = struct {
             0xE2 => blk: {
                 gb.cpu.PC += 1;
                 gb.tCycles += 8;
-                gb.memory.Raw[0xFF00 + @intCast(u16, gb.cpu.BC.S.C)] = gb.cpu.AF.S.A;
-                std.log.info("LD ($FF00+{X:0>2}),A", .{gb.cpu.BC.S.C});
+                gb.memory.write8(0xFF00 + @intCast(u16, gb.cpu.BC.S.C), gb.cpu.AF.S.A);
+                // std.log.info("LD ($FF00+{X:0>2}),A", .{gb.cpu.BC.S.C});
                 break :blk;
             },
 
@@ -544,14 +546,14 @@ pub const Core = struct {
                 gb.cpu.PC += 1;
                 gb.tCycles += 16;
 
-                const msb: u8 = gb.memory.Raw[gb.cpu.PC];
+                const msb: u8 = gb.memory.read8(gb.cpu.PC);
                 gb.cpu.PC += 1;
 
-                const lsb: u8 = gb.memory.Raw[gb.cpu.PC];
+                const lsb: u8 = gb.memory.read8(gb.cpu.PC);
                 gb.cpu.PC += 1;
 
-                gb.memory.Raw[(@as(u16, lsb) << 8) | msb] = gb.cpu.AF.S.A;
-                std.log.info("LD (${x:0>4}),A", .{(@as(u16, lsb) << 8) | msb});
+                gb.memory.write8((@as(u16, lsb) << 8) | msb, gb.cpu.AF.S.A);
+                // std.log.info("LD (${x:0>4}),A", .{(@as(u16, lsb) << 8) | msb});
                 break :blk;
             },
 
@@ -560,10 +562,10 @@ pub const Core = struct {
                 gb.cpu.PC += 1;
                 gb.tCycles += 12;
 
-                const a8: u16 = gb.memory.Raw[gb.cpu.PC];
+                const a8: u16 = gb.memory.read8(gb.cpu.PC);
                 gb.cpu.PC += 1;
-                gb.cpu.AF.S.A = gb.memory.Raw[0xff00 + a8];
-                std.log.info("LDH A,(${x:0>2})=${x:0>2}", .{ a8, gb.cpu.AF.S.A });
+                gb.cpu.AF.S.A = gb.memory.read8(0xff00 + a8);
+                // std.log.info("LDH A,(${x:0>2})=${x:0>2}", .{ a8, gb.cpu.AF.S.A });
                 break :blk;
             },
 
@@ -572,8 +574,8 @@ pub const Core = struct {
 
             else => blk: {
                 gb.halt = true;
-                std.log.info("Unimplemented Instruction at PC=${X:0>4}:0x{X:0>2}", .{ gb.cpu.PC, gb.memory.Raw[gb.cpu.PC] });
-                std.log.info("Flags={B:0>1}", .{gb.cpu.AF.S.F});
+                // std.log.info("Unimplemented Instruction at PC=${X:0>4}:0x{X:0>2}", .{ gb.cpu.PC, gb.memory.Raw[gb.cpu.PC] });
+                // std.log.info("Flags={B:0>1}", .{gb.cpu.AF.S.F});
                 break :blk return RuntimeError.InstructionNotImplemented;
             },
         }
