@@ -26,7 +26,9 @@ pub fn main() anyerror!void {
 
     core.memory.write8(0x69, 0x42);
     std.log.info("0x69 = {x:0>4}", .{core.memory.read8(0x69)});
-    while (core.halt != true)
+    while (core.halt != true) {
         try core.step();
+        core.debugger.step();
+    }
     std.log.info("{x:0>2}", .{core});
 }

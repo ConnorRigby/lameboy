@@ -1,5 +1,7 @@
 const std = @import("std");
 
+pub const RegisterID = enum(u32) { A = 0x0, F = 0x1, AF = 0x2, B = 0x3, C = 0x4, BC = 0x5, D = 0x6, E = 0x7, DE = 0x8, H = 0x9, L = 0xA, HL = 0xB, PC = 0xC, SP = 0xD };
+
 pub const RegisterReference = extern union {
     S: extern struct {
         rx: u8,
