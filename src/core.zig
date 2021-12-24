@@ -38,7 +38,6 @@ pub const Core = struct {
         core.cpu.PC += 1;
         core.tCycles += 4;
         // std.log.info("NOP", .{});
-        core.halt = true;
     }
 
     pub fn inc_r(core: *Core, r: *u8) void {
@@ -107,12 +106,12 @@ pub const Core = struct {
 
         const d8: u8 = core.memory.read8(rr);
         const a: u8 = core.cpu.AF.S.A;
-        core.cpu.AF.S.A += d8;
-        if ((a + d8) == 0)
+        core.cpu.AF.S.A +%= d8;
+        if ((a +% d8) == 0)
             core.cpu.AF.S.F.z = 1;
         if ((a & 0xf) + (d8 & 0xf) > 0x0f)
             core.cpu.AF.S.F.h = 1;
-        if ((a + d8) > 0xff)
+        if ((a +% d8) > 0xff)
             core.cpu.AF.S.F.c = 1;
     }
 
@@ -159,6 +158,7 @@ pub const Core = struct {
     pub fn ld_hli_r(core: *Core, r: u8) void {
         core.cpu.PC += 1;
         core.tCycles += 8;
+        // std.log.info("LD (HL+) A (${x:0>4})=${x:0>2}", .{core.cpu.HL.HL, r});
         core.memory.write8(core.cpu.HL.HL, r);
         core.cpu.HL.HL +%= 1;
     }
@@ -342,9 +342,8 @@ pub const Core = struct {
     }
 
     pub fn step(gb: *Core) !void {
-        // std.log.info("\tPC=0x{x:0>2} OP=0x{x:0>2}", .{ gb.cpu.PC, gb.memory.Raw[gb.cpu.PC] });
-
-        switch (gb.memory.Raw[gb.cpu.PC]) {
+        // std.log.info("PC=${x:0>4} OP=${x:0>2}", .{gb.cpu.PC, gb.memory.read8(gb.cpu.PC)});
+        switch (gb.memory.read8(gb.cpu.PC)) {
             // NOP
             0 => nop(gb),
 
@@ -481,7 +480,7 @@ pub const Core = struct {
             0xCB => {
                 gb.cpu.PC += 1;
                 gb.tCycles += 4;
-                switch (gb.memory.Raw[gb.cpu.PC]) {
+                switch (gb.memory.read8(gb.cpu.PC)) {
                     // RL C
                     0x11 => cblk: {
                         gb.cpu.PC += 1;
@@ -510,11 +509,12 @@ pub const Core = struct {
                     // BIT 7, H
                     0x7C => cblk: {
                         gb.cpu.PC += 1;
-                        gb.tCycles += 8;
+                        gb.tCycles += 4;
                         gb.cpu.AF.S.F.h = 1;
                         gb.cpu.AF.S.F.n = 0;
-                        gb.cpu.AF.S.F.z = @intCast(u1, ((gb.cpu.HL.S.H >> 7) & 0x01));
-                        // std.log.info("BIT 7, H {B:0>1}", .{gb.cpu.AF.S.F});
+                        gb.cpu.AF.S.F.z = 0;
+
+                        gb.cpu.AF.S.F.z = @intCast(u1, ((gb.cpu.HL.S.H >> 7) & 1) ^ 1);
                         break :cblk;
                     },
                     else => cblk: {

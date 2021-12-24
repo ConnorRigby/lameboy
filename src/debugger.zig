@@ -169,7 +169,7 @@ pub const Debugger = struct {
     }
 
     pub fn start(debugger: *Debugger, core: *Core) !void {
-        std.log.info("starting debugger {*} {*}", .{ debugger, core });
+        // std.log.info("starting debugger {*} {*}", .{ debugger, core });
 
         const status = lua.luaL_loadfilex(debugger.L, "script.lua", "bt");
         if (status != 0) {

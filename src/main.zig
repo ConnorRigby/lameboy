@@ -11,24 +11,21 @@ pub fn main() anyerror!void {
     );
     defer bootrom.close();
     try bootrom.seekTo(0);
-    _ = try bootrom.readAll(&core.memory.Raw);
+    _ = try bootrom.readAll(&core.memory.Bootrom);
 
-    // const testrom = try std.fs.cwd().openFile(
-    //     "gb-test-roms-master/cpu_instrs/cpu_instrs.gb",
-    //     .{ .read = true },
-    // );
-    // defer testrom.close();
-    // try testrom.seekTo(0);
-    // // const slice = core.memory.Raw[256..0x3E80];
-    // const result = try testrom.readAll(&core.memory.Rom);
+    const testrom = try std.fs.cwd().openFile(
+        "gb-test-roms-master/cpu_instrs/cpu_instrs.gb",
+        .{ .read = true },
+    );
+    defer testrom.close();
+    try testrom.seekTo(0);
+    // const slice = core.memory.Raw[256..0x3E80];
+    const result = try testrom.readAll(&core.memory.ROM);
 
-    // std.log.info("result={d} 0x{x:0>2}", .{result, core.memory.Rom[0x0101]});
+    std.log.info("result={d} 0x{x:0>2}", .{ result, core.memory.ROM[0x0101] });
 
-    core.memory.write8(0x69, 0x42);
-    std.log.info("0x69 = {x:0>4}", .{core.memory.read8(0x69)});
     while (core.halt != true) {
         try core.step();
         core.debugger.step();
     }
-    std.log.info("{x:0>2}", .{core});
 }

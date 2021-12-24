@@ -8,5 +8,5 @@ local CPU = Core.CPU
 -- print(CPU:getRegister(CPU.AF))
 
 function Core.step()
-  io.write("\rHL="..CPU:getRegister(CPU.HL))
+  -- io.write("\rHL="..CPU:getRegister(CPU.HL))
 end
