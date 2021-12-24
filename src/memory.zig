@@ -66,6 +66,7 @@ pub const Memory = struct {
     }
 
     pub fn write8(mem: *Memory, address: u16, value: u8) void {
+        // std.log.info("\t write8 ${x:0>4}=${x:0>2}", .{address, value});
         if (address == 0xFF01) {
             std.log.info("{c}", .{value});
             // std.io.bufferedWriter(stdout)

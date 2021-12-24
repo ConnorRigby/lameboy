@@ -14,15 +14,12 @@ pub fn main() anyerror!void {
     _ = try bootrom.readAll(&core.memory.Bootrom);
 
     const testrom = try std.fs.cwd().openFile(
-        "gb-test-roms-master/cpu_instrs/cpu_instrs.gb",
+        "gb-test-roms-master/cgb_sound/rom_singles/01-registers.gb",
         .{ .read = true },
     );
     defer testrom.close();
     try testrom.seekTo(0);
-    // const slice = core.memory.Raw[256..0x3E80];
-    const result = try testrom.readAll(&core.memory.ROM);
-
-    std.log.info("result={d} 0x{x:0>2}", .{ result, core.memory.ROM[0x0101] });
+    _ = try testrom.readAll(&core.memory.ROM);
 
     while (core.halt != true) {
         try core.step();
