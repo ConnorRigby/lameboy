@@ -8,6 +8,8 @@ pub const Memory = struct {
     OAM: [0x9F]u8,
     HRAM: [128]u8,
 
+    romSize: u64,
+
     interruptsEnabled: bool,
     inBootrom: bool,
 
@@ -22,10 +24,12 @@ pub const Memory = struct {
             .HRAM = [_]u8{0} ** 128,
             .inBootrom = true,
             .interruptsEnabled = false,
+            .romSize = 0,
         };
     }
 
     pub fn read8(mem: *Memory, address: u16) u8 {
+        // std.log.info("\tread8 ${x:0>4}", .{address});
         if (address <= 0x3FFF) {
             if (address <= 0x100 and mem.inBootrom) {
                 return mem.Bootrom[address];
@@ -33,8 +37,7 @@ pub const Memory = struct {
                 return mem.ROM[address];
             }
         } else if (address <= 0x7FFF) {
-            std.log.info("fixme", .{});
-            return 0;
+            return mem.ROM[address];
         } else if (address <= 0x9FFF) {
             return mem.VRAM[0xA000 - address];
         } else if (address <= 0xBFFF) {
@@ -49,7 +52,8 @@ pub const Memory = struct {
             std.log.info("you can't do that!!!!!", .{});
             return 0;
         } else if (address <= 0xFF7F) {
-            // std.log.info("IO register", .{});
+            // std.log.info("\tRead IO register ${x:0>4}", .{address});
+            // std.os.exit(1);
             return 0x90;
         } else if (address <= 0xFFFE) {
             return mem.HRAM[0xFFFF - address];
@@ -57,6 +61,7 @@ pub const Memory = struct {
             return @boolToInt(mem.interruptsEnabled);
         } else {
             std.log.info("oops, something bad happened", .{});
+            std.os.exit(1);
             return 0;
         }
     }
@@ -85,6 +90,7 @@ pub const Memory = struct {
             }
         } else if (address <= 0x7FFF) {
             std.log.info("can't write to rom", .{});
+            std.os.exit(1);
         } else if (address <= 0x9FFF) {
             // std.log.info("VRAM[${x:0>4}]=${x:0>2}", .{0xA000-address,value});
             mem.VRAM[0xA000 - address] = value;
@@ -99,10 +105,12 @@ pub const Memory = struct {
         } else if (address <= 0xFEFF) {
             std.log.info("you can't do that!!!!!", .{});
         } else if (address >= 0xFF00 and address <= 0xFF7F) {
-            // std.log.info("IO register write ${x:0>4} ${x:0>2}", .{address, value});
             if (address == 0xFF50) {
-                //     // std.log.info("bootrom=fals", .{});
                 mem.inBootrom = false;
+            } else if (address == 0xFF42) {
+                // fix this later
+            } else {
+                std.log.info("Unknown IO register write ${x:0>4} ${x:0>2}", .{ address, value });
             }
         } else if (address <= 0xFFFE) {
             mem.HRAM[0xFFFF - address] = value;

@@ -62,6 +62,47 @@ pub const Core = struct {
         rr.* += 1;
     }
 
+    pub fn inc_dhl(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 12;
+        const value: u8 = core.memory.read8(core.cpu.HL.HL) + 1;
+        core.memory.write8(core.cpu.HL.HL, value);
+
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.z = 0;
+        core.cpu.AF.S.F.h = 0;
+
+        if ((value & 0x0F) == 0)
+            core.cpu.AF.S.F.h = 1;
+        if ((value & 0xFF) == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn dec_dhl(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 12;
+        const value: u8 = core.memory.read8(core.cpu.HL.HL) - 1;
+        core.memory.write8(core.cpu.HL.HL, value);
+
+        core.cpu.AF.S.F.n = 1;
+        core.cpu.AF.S.F.z = 0;
+        core.cpu.AF.S.F.h = 0;
+
+        if ((value & 0x0F) == 0)
+            core.cpu.AF.S.F.h = 1;
+        if ((value & 0xFF) == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn ld_dhl_d8(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 12;
+
+        const d8: u8 = core.memory.read8(core.cpu.PC);
+        core.cpu.PC += 1;
+        core.memory.write8(core.cpu.HL.HL, d8);
+    }
+
     pub fn dec_r(core: *Core, r: *u8) void {
         core.cpu.PC += 1;
         core.tCycles += 4;
@@ -77,6 +118,12 @@ pub const Core = struct {
 
         if (r.* == 0)
             core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn dec_rr(core: *Core, rr: *u16) void {
+        core.cpu.PC += 1;
+        core.tCycles += 8;
+        rr.* -= 1;
     }
 
     pub fn sub_r(core: *Core, r: *u8) void {
@@ -98,18 +145,199 @@ pub const Core = struct {
             core.cpu.AF.S.F.c = 1;
     }
 
-    pub fn add_rr(core: *Core, rr: u16) void {
+    pub fn sub_hl(core: *Core) void {
         core.cpu.PC += 1;
         core.tCycles += 8;
 
-        const d8: u8 = core.memory.read8(rr);
+        const d8: u8 = core.memory.read8(core.cpu.HL.HL);
         const a: u8 = core.cpu.AF.S.A;
-        core.cpu.AF.S.A +%= d8;
-        if ((a +% d8) == 0)
+        core.cpu.AF.S.A -%= d8;
+        core.cpu.AF.S.F.n = 1;
+
+        if (a == d8)
             core.cpu.AF.S.F.z = 1;
-        if ((a & 0xf) + (d8 & 0xf) > 0x0f)
+
+        if ((a & 0xf) < (d8 & 0xf))
             core.cpu.AF.S.F.h = 1;
-        if ((a +% d8) > 0xff)
+
+        if (a < d8)
+            core.cpu.AF.S.F.c = 1;
+    }
+
+    pub fn sub_d8(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 8;
+
+        const d8: u8 = core.memory.read8(core.cpu.PC);
+        core.cpu.PC += 1;
+        const a: u8 = core.cpu.AF.S.A;
+        core.cpu.AF.S.A -%= d8;
+        core.cpu.AF.S.F.n = 1;
+
+        if (a == d8)
+            core.cpu.AF.S.F.z = 1;
+
+        if ((a & 0xf) < (d8 & 0xf))
+            core.cpu.AF.S.F.h = 1;
+
+        if (a < d8)
+            core.cpu.AF.S.F.c = 1;
+    }
+
+    pub fn sbc_r(core: *Core, r: u8) void {
+        core.cpu.PC += 1;
+        core.tCycles += 4;
+        const a: u8 = core.cpu.AF.S.A;
+        const carry: u1 = @boolToInt(core.cpu.AF.S.F.c != 0);
+        core.cpu.AF.S.A = (a - r - carry);
+        core.cpu.AF.S.F.n = 1;
+
+        if ((a - r - carry) == 0)
+            core.cpu.AF.S.F.z = 1;
+        if ((a & 0xF) < (r & 0xF) + carry)
+            core.cpu.AF.S.F.h = 1;
+        if ((a - r) - carry > 0xFF)
+            core.cpu.AF.S.F.c = 1;
+    }
+
+    pub fn sbc_hl(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 8;
+        const r: u8 = core.memory.read8(core.cpu.HL.HL);
+        const a: u8 = core.cpu.AF.S.A;
+        const carry: u1 = @boolToInt(core.cpu.AF.S.F.c != 0);
+        core.cpu.AF.S.A = (a - r - carry);
+        core.cpu.AF.S.F.n = 1;
+
+        if ((a - r - carry) == 0)
+            core.cpu.AF.S.F.z = 1;
+        if ((a & 0xF) < (r & 0xF) + carry)
+            core.cpu.AF.S.F.h = 1;
+        if ((a - r) - carry > 0xFF)
+            core.cpu.AF.S.F.c = 1;
+    }
+
+    pub fn sbc_d8(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 4;
+        const r: u8 = core.memory.read8(core.cpu.PC);
+        core.cpu.PC += 1;
+        const a: u8 = core.cpu.AF.S.A;
+        const carry: u1 = @boolToInt(core.cpu.AF.S.F.c != 0);
+        core.cpu.AF.S.A = (a - r - carry);
+        core.cpu.AF.S.F.n = 1;
+
+        if ((a - r - carry) == 0)
+            core.cpu.AF.S.F.z = 1;
+        if ((a & 0xF) < (r & 0xF) + carry)
+            core.cpu.AF.S.F.h = 1;
+        if ((a - r) - carry > 0xFF)
+            core.cpu.AF.S.F.c = 1;
+    }
+
+    pub fn add_r(core: *Core, r: u8) void {
+        core.cpu.PC += 1;
+        core.tCycles += 4;
+        const a: u8 = core.cpu.AF.S.A;
+        core.cpu.AF.S.A += r;
+        if (core.cpu.AF.S.A == 0)
+            core.cpu.AF.S.F.z = 1;
+        if ((a & 0xF) + (r & 0xF) > 0x0F)
+            core.cpu.AF.S.F.h = 1;
+        if ((a + r) > 0xFF)
+            core.cpu.AF.S.F.c = 1;
+    }
+
+    pub fn add_hl(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 8;
+
+        const r: u8 = core.memory.read8(core.cpu.HL.HL);
+        const a: u8 = core.cpu.AF.S.A;
+        core.cpu.AF.S.A +%= r;
+        if ((a +% r) == 0)
+            core.cpu.AF.S.F.z = 1;
+        if ((a & 0xf) + (r & 0xf) > 0x0f)
+            core.cpu.AF.S.F.h = 1;
+        if ((a +% r) > 0xff)
+            core.cpu.AF.S.F.c = 1;
+    }
+
+    pub fn add_d8(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 8;
+
+        const r: u8 = core.memory.read8(core.cpu.PC);
+        core.cpu.PC += 1;
+        const a: u8 = core.cpu.AF.S.A;
+        core.cpu.AF.S.A +%= r;
+        if ((a +% r) == 0)
+            core.cpu.AF.S.F.z = 1;
+        if ((a & 0xf) + (r & 0xf) > 0x0f)
+            core.cpu.AF.S.F.h = 1;
+        if ((a +% r) > 0xff)
+            core.cpu.AF.S.F.c = 1;
+    }
+
+    pub fn add_hl_rr(core: *Core, rr: u16) void {
+        core.cpu.PC += 1;
+        core.tCycles += 8;
+        const hl: u16 = core.cpu.HL.HL;
+
+        core.cpu.HL.HL += rr;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.h = 0;
+
+        if ((((hl & 0xFFF) + (rr & 0xFFF)) & 0x1000) != 0)
+            core.cpu.AF.S.F.h = 1;
+
+        if (((hl + rr) & 0x1000) != 0)
+            core.cpu.AF.S.F.c = 1;
+    }
+
+    pub fn adc_r(core: *Core, r: u8) void {
+        core.cpu.PC += 1;
+        core.tCycles += 4;
+        const a: u8 = core.cpu.AF.S.A;
+        const carry: u1 = @boolToInt(core.cpu.AF.S.F.c == 0);
+        core.cpu.AF.S.A = (a + r + carry);
+        if ((a + r + carry) == 0)
+            core.cpu.AF.S.F.z = 1;
+        if ((a & 0xF) + (r & 0xF) + carry > 0x0F)
+            core.cpu.AF.S.F.h = 1;
+        if ((a + r) + carry > 0xFF)
+            core.cpu.AF.S.F.c = 1;
+    }
+
+    pub fn adc_hl(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 8;
+        const a: u8 = core.cpu.AF.S.A;
+        const r: u8 = core.memory.read8(core.cpu.HL.HL);
+        const carry: u1 = @boolToInt(core.cpu.AF.S.F.c == 0);
+        core.cpu.AF.S.A = (a + r + carry);
+        if ((a + r + carry) == 0)
+            core.cpu.AF.S.F.z = 1;
+        if ((a & 0xF) + (r & 0xF) + carry > 0x0F)
+            core.cpu.AF.S.F.h = 1;
+        if ((a + r) + carry > 0xFF)
+            core.cpu.AF.S.F.c = 1;
+    }
+
+    pub fn adc_d8(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 8;
+        const a: u8 = core.cpu.AF.S.A;
+        const r: u8 = core.memory.read8(core.cpu.PC);
+        core.cpu.PC += 1;
+        const carry: u1 = @boolToInt(core.cpu.AF.S.F.c == 0);
+        core.cpu.AF.S.A = (a + r + carry);
+        if ((a + r + carry) == 0)
+            core.cpu.AF.S.F.z = 1;
+        if ((a & 0xF) + (r & 0xF) + carry > 0x0F)
+            core.cpu.AF.S.F.h = 1;
+        if ((a + r) + carry > 0xFF)
             core.cpu.AF.S.F.c = 1;
     }
 
@@ -238,6 +466,41 @@ pub const Core = struct {
         core.cpu.AF.S.A = core.memory.read8((@as(u16, lsb) << 8) | msb);
     }
 
+    pub fn ld_da16_sp(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 20;
+
+        const msb: u8 = core.memory.read8(core.cpu.PC);
+        core.cpu.PC += 1;
+
+        const lsb: u8 = core.memory.read8(core.cpu.PC);
+        core.cpu.PC += 1;
+        const address: u16 = (@as(u16, lsb) << 8) | msb;
+        core.memory.write8(address, @intCast(u8, core.cpu.SP & 0xFF));
+        core.memory.write8(address + 1, @intCast(u8, core.cpu.SP >> 8));
+    }
+
+    pub fn ld_hl_sp_r8(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 12;
+
+        const offset: u8 = core.memory.read8(core.cpu.PC);
+        core.cpu.PC += 1;
+        core.cpu.HL.HL = core.cpu.SP + offset;
+        core.cpu.AF.AF &= 0xFF00;
+
+        if ((core.cpu.SP & 0xF) + (offset & 0xF) > 0xF)
+            core.cpu.AF.S.F.h = 1;
+        if ((core.cpu.SP & 0xFF) + (offset & 0xFF) > 0xFF)
+            core.cpu.AF.S.F.c = 1;
+    }
+
+    pub fn ld_sp_hl(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 8;
+        core.cpu.SP = core.cpu.HL.HL;
+    }
+
     // i stole this implementation from sameboy.
     // i do not fully understand it
     pub fn rla(core: *Core) void {
@@ -257,26 +520,125 @@ pub const Core = struct {
             core.cpu.AF.S.F.c = 1;
     }
 
+    pub fn rlca(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 4;
+
+        const carry: bool = (core.cpu.AF.AF & 0x8000) != 0;
+        core.cpu.AF.AF = (core.cpu.AF.AF & 0xFF00) << 1;
+        if (carry) {
+            core.cpu.AF.S.F.c = 1;
+            core.cpu.AF.AF |= 0x0100;
+        }
+    }
+
+    pub fn rrca(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 4;
+
+        const carry: bool = (core.cpu.AF.AF * 0x100) != 0;
+        core.cpu.AF.AF = (core.cpu.AF.AF >> 1) & 0xFF00;
+        if (carry) {
+            core.cpu.AF.S.F.c = 1;
+            core.cpu.AF.AF |= 0x8000;
+        }
+    }
+
+    pub fn rra(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 4;
+
+        const bit1: bool = (core.cpu.AF.AF & 0x0100) != 0;
+        const carry: bool = (core.cpu.AF.AF * 0x100) != 0;
+
+        core.cpu.AF.AF = (core.cpu.AF.AF >> 1) & 0xFF00;
+        if (carry)
+            core.cpu.AF.AF |= 0x8000;
+        if (bit1)
+            core.cpu.AF.S.F.c = 1;
+    }
+
+    pub fn cpl(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 4;
+        core.cpu.AF.AF ^= 0xFF00;
+        core.cpu.AF.S.F.c = 1;
+        core.cpu.AF.S.F.n = 1;
+    }
+
+    pub fn scf(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 4;
+        core.cpu.AF.S.F.c = 1;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.n = 0;
+    }
+
+    pub fn ccf(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 4;
+        core.cpu.AF.AF ^= 0x0010;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.n = 0;
+    }
+
+    pub fn cp_r(core: *Core, r: u8) void {
+        core.cpu.PC += 1;
+        core.tCycles += 4;
+
+        const a: u8 = core.cpu.AF.S.A;
+
+        core.cpu.AF.AF &= 0xFF00;
+        core.cpu.AF.S.F.n = 1;
+
+        if (a == r)
+            core.cpu.AF.S.F.z = 1;
+
+        if ((a & 0xf) < (r & 0xf))
+            core.cpu.AF.S.F.h = 1;
+
+        if (a < r)
+            core.cpu.AF.S.F.h = 1;
+    }
+
+    pub fn cp_hl(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 8;
+
+        const r: u8 = core.memory.read8(core.cpu.HL.HL);
+        const a: u8 = core.cpu.AF.S.A;
+
+        core.cpu.AF.AF &= 0xFF00;
+        core.cpu.AF.S.F.n = 1;
+
+        if (a == r)
+            core.cpu.AF.S.F.z = 1;
+
+        if ((a & 0xf) < (r & 0xf))
+            core.cpu.AF.S.F.h = 1;
+
+        if (a < r)
+            core.cpu.AF.S.F.h = 1;
+    }
+
     pub fn cp_d8(core: *Core) void {
         core.cpu.PC += 1;
         core.tCycles += 8;
 
-        const d8: u8 = core.memory.read8(core.cpu.PC);
+        const r: u8 = core.memory.read8(core.cpu.PC);
         core.cpu.PC += 1;
         const a: u8 = core.cpu.AF.S.A;
 
         core.cpu.AF.AF &= 0xFF00;
         core.cpu.AF.S.F.n = 1;
 
-        // std.log.info("a=${x:0>2}", .{a});
-
-        if (a == d8)
+        if (a == r)
             core.cpu.AF.S.F.z = 1;
 
-        if ((a & 0xf) < (d8 & 0xf))
+        if ((a & 0xf) < (r & 0xf))
             core.cpu.AF.S.F.h = 1;
 
-        if (a < d8)
+        if (a < r)
             core.cpu.AF.S.F.h = 1;
     }
 
@@ -324,7 +686,7 @@ pub const Core = struct {
         core.memory.write8(core.cpu.SP, rr.*.S.ry);
     }
 
-    pub fn call(core: *Core) void {
+    pub fn call_a16(core: *Core) void {
         core.cpu.PC += 1;
         core.tCycles += 24;
 
@@ -345,6 +707,38 @@ pub const Core = struct {
         // std.log.info("CALL ${x:0>4}", .{nn});
     }
 
+    pub fn call_nz_a16(core: *Core) void {
+        if (core.cpu.AF.S.F.z != 1) {
+            call_a16(core);
+        } else {
+            core.tCycles += 12;
+        }
+    }
+
+    pub fn call_z_a16(core: *Core) void {
+        if (core.cpu.AF.S.F.z == 1) {
+            call_a16(core);
+        } else {
+            core.tCycles += 12;
+        }
+    }
+
+    pub fn call_nc_a16(core: *Core) void {
+        if (core.cpu.AF.S.F.c != 1) {
+            call_a16(core);
+        } else {
+            core.tCycles += 12;
+        }
+    }
+
+    pub fn call_c_a16(core: *Core) void {
+        if (core.cpu.AF.S.F.c == 1) {
+            call_a16(core);
+        } else {
+            core.tCycles += 12;
+        }
+    }
+
     pub fn ret(core: *Core) void {
         core.cpu.PC += 1;
         core.tCycles += 16;
@@ -357,6 +751,47 @@ pub const Core = struct {
 
         const nn: u16 = (@as(u16, lsb) << 8) | msb;
         core.cpu.PC = nn;
+    }
+
+    pub fn reti(core: *Core) void {
+        ret(core);
+        core.memory.interruptsEnabled = true;
+    }
+
+    pub fn ret_nz(core: *Core) void {
+        if (core.cpu.AF.S.F.z != 1) {
+            core.tCycles += 4;
+            ret(core);
+        } else {
+            core.tCycles += 8;
+        }
+    }
+
+    pub fn ret_z(core: *Core) void {
+        if (core.cpu.AF.S.F.z == 1) {
+            core.tCycles += 4;
+            ret(core);
+        } else {
+            core.tCycles += 8;
+        }
+    }
+
+    pub fn ret_nc(core: *Core) void {
+        if (core.cpu.AF.S.F.c != 1) {
+            core.tCycles += 4;
+            ret(core);
+        } else {
+            core.tCycles += 8;
+        }
+    }
+
+    pub fn ret_c(core: *Core) void {
+        if (core.cpu.AF.S.F.c == 1) {
+            core.tCycles += 4;
+            ret(core);
+        } else {
+            core.tCycles += 8;
+        }
     }
 
     pub fn jr_r8(core: *Core) void {
@@ -399,7 +834,39 @@ pub const Core = struct {
         }
     }
 
-    pub fn jp(core: *Core) void {
+    pub fn jr_nc_r8(core: *Core) void {
+        core.cpu.PC += 1;
+        // const r8: i8 = @bitCast(i8, core.memory.Raw[core.cpu.PC]);
+        const r8: i8 = core.memory.readi8(core.cpu.PC);
+        core.cpu.PC += 1;
+
+        if (core.cpu.AF.S.F.c != 1) {
+            core.tCycles += 12;
+            // std.log.info("JR NC,{d} (true) f={B:0>1}", .{r8, core.cpu.AF.S.F});
+            core.cpu.PC +%= @bitCast(u16, @intCast(i16, r8));
+        } else {
+            core.tCycles += 8;
+            // std.log.info("JR NC,{d} (false) f={B:0>1}", .{r8, core.cpu.AF.S.F});
+        }
+    }
+
+    pub fn jr_c_r8(core: *Core) void {
+        core.cpu.PC += 1;
+        // const r8: i8 = @bitCast(i8, core.memory.Raw[core.cpu.PC]);
+        const r8: i8 = core.memory.readi8(core.cpu.PC);
+        core.cpu.PC += 1;
+
+        if (core.cpu.AF.S.F.c == 1) {
+            core.tCycles += 12;
+            // std.log.info("JR C,{d} (true) ${B:0>1}", .{r8, core.cpu.AF.S.F});
+            core.cpu.PC +%= @bitCast(u16, @intCast(i16, r8));
+        } else {
+            core.tCycles += 8;
+            // std.log.info("JR C,{d} (false) ${B:0>1}", .{r8, core.cpu.AF.S.F});
+        }
+    }
+
+    pub fn jp_a16(core: *Core) void {
         core.cpu.PC += 1;
         core.tCycles += 16;
         const msb: u8 = core.memory.read8(core.cpu.PC);
@@ -411,12 +878,151 @@ pub const Core = struct {
         core.cpu.PC = (@as(u16, lsb) << 8) | msb;
     }
 
-    pub fn xor_a_r(core: *Core, value: u8) void {
+    pub fn jp_nz_a16(core: *Core) void {
+        if (core.cpu.AF.S.F.z != 1) {
+            jp_a16(core);
+        } else {
+            core.tCycles += 12;
+        }
+    }
+
+    pub fn jp_z_a16(core: *Core) void {
+        if (core.cpu.AF.S.F.z == 1) {
+            jp_a16(core);
+        } else {
+            core.tCycles += 12;
+        }
+    }
+
+    pub fn jp_nc_a16(core: *Core) void {
+        if (core.cpu.AF.S.F.c != 1) {
+            jp_a16(core);
+        } else {
+            core.tCycles += 12;
+        }
+    }
+
+    pub fn jp_c_a16(core: *Core) void {
+        if (core.cpu.AF.S.F.c == 1) {
+            jp_a16(core);
+        } else {
+            core.tCycles += 12;
+        }
+    }
+
+    pub fn jp_hl(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 4;
+        core.cpu.PC = core.cpu.HL.HL;
+    }
+
+    pub fn and_r(core: *Core, r: u8) void {
+        core.cpu.PC += 1;
+        core.tCycles += 4;
+        const a: u8 = core.cpu.AF.S.A;
+        core.cpu.AF.S.A = @as(u8, (a & r)) <<| 8;
+        core.cpu.AF.S.F.h = 1;
+        if ((a & r) == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn and_hl(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 8;
+        const r: u8 = core.memory.read8(core.cpu.HL.HL);
+        const a: u8 = core.cpu.AF.S.A;
+        core.cpu.AF.S.A = @as(u8, (a & r) <<| 8);
+        core.cpu.AF.S.F.h = 1;
+        if ((a & r) == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn and_d8(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 8;
+        const r: u8 = core.memory.read8(core.cpu.PC);
+        core.cpu.PC += 1;
+        const a: u8 = core.cpu.AF.S.A;
+        core.cpu.AF.S.A = @as(u8, (a & r) <<| 8);
+        core.cpu.AF.S.F.h = 1;
+        if ((a & r) == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn add_sp_r8(core: *Core) void {
+        core.cpu.PC += 1;
+        const sp: u16 = core.cpu.SP;
+        const offset: u8 = core.memory.read8(core.cpu.PC);
+        core.cpu.PC += 1;
+        core.cpu.SP += offset;
+        core.cpu.AF.AF &= 0xFF00;
+
+        if ((sp & 0xF) + (offset & 0xF) > 0xF)
+            core.cpu.AF.S.F.h = 1;
+        if ((sp & 0xFF) + (offset & 0xFF) > 0xFF)
+            core.cpu.AF.S.F.c = 1;
+    }
+
+    pub fn xor_r(core: *Core, r: u8) void {
         core.cpu.PC += 1;
         core.tCycles += 1;
-        core.cpu.AF.S.A ^= value;
+        core.cpu.AF.S.A ^= r;
 
         if (core.cpu.AF.S.A == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn xor_hl(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 8;
+        const r: u8 = core.memory.read8(core.cpu.HL.HL);
+        core.cpu.AF.S.A ^= r;
+
+        if (core.cpu.AF.S.A == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn xor_d8(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 8;
+        const r: u8 = core.memory.read8(core.cpu.PC);
+        core.cpu.PC += 1;
+        core.cpu.AF.S.A ^= r;
+
+        if (core.cpu.AF.S.A == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn or_r(core: *Core, r: u8) void {
+        core.cpu.PC += 1;
+        core.tCycles += 4;
+
+        const a: u8 = core.cpu.AF.S.A;
+        core.cpu.AF.S.A |= r;
+        if ((a | r) == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn or_hl(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 8;
+
+        const r: u8 = core.memory.read8(core.cpu.HL.HL);
+        const a: u8 = core.cpu.AF.S.A;
+        core.cpu.AF.S.A |= r;
+        if ((a | r) == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn or_d8(core: *Core) void {
+        core.cpu.PC += 1;
+        core.tCycles += 8;
+
+        const r: u8 = core.memory.read8(core.cpu.PC);
+        core.cpu.PC += 1;
+        const a: u8 = core.cpu.AF.S.A;
+        core.cpu.AF.S.A |= r;
+        if ((a | r) == 0)
             core.cpu.AF.S.F.z = 1;
     }
 
@@ -432,13 +1038,26 @@ pub const Core = struct {
         core.memory.interruptsEnabled = true;
     }
 
+    pub fn rst(core: *Core) void {
+        core.tCycles += 16;
+        const opcode: u8 = core.memory.read8(core.cpu.PC);
+        core.cpu.PC += 1;
+        core.cpu.SP -= 1;
+        core.memory.write8(core.cpu.SP, @intCast(u8, core.cpu.PC >> 8));
+        core.cpu.SP -= 1;
+        core.memory.write8(core.cpu.SP, @truncate(u8, core.cpu.PC));
+        core.cpu.PC = opcode ^ 0xC7;
+        std.log.info("rst ${x:0>4}", .{core.cpu.PC});
+    }
+
     pub fn step(gb: *Core) !void {
-        // std.log.info("PC=${x:0>4} OP=${x:0>2}", .{gb.cpu.PC, gb.memory.read8(gb.cpu.PC)});
-        switch (gb.memory.read8(gb.cpu.PC)) {
+        const opcode: u8 = gb.memory.read8(gb.cpu.PC);
+        // std.log.info("PC=${x:0>4} OP=${x:0>2} {s}", .{ gb.cpu.PC, opcode, disassembler.disassemble(opcode) });
+        switch (opcode) {
             // NOP
             0 => nop(gb),
             // LD BC,d16
-            0x01 => ld_rr_d16(gb, &gb.cpu.BC),
+            0x01 => ld_rr_d16(gb, &gb.cpu.BC.BC),
             // LD (BC),A
             0x02 => ld_rr_r(gb, gb.cpu.BC.BC, gb.cpu.AF.S.A),
             // INC BC
@@ -452,11 +1071,11 @@ pub const Core = struct {
             // RLCA
             0x07 => rlca(gb),
             // LD (a16),SP
-            0x08 => ld_a16_rr(gb, gb.cpu.SP),
+            0x08 => ld_da16_sp(gb),
             // ADD HL,BC
-            0x09 => add_rr_rr(gb, gb.cpu.HL.HL, gb.cpu.BC.BC),
+            0x09 => add_hl_rr(gb, gb.cpu.BC.BC),
             // LD A,(BC)
-            0x0A => ld_r_rr(gb, gb.cpu.AF.S.A, gb.cpu.BC.BC),
+            0x0A => ld_r_rr(gb, &gb.cpu.AF.S.A, gb.cpu.BC.BC),
             // DEC BC
             0x0B => dec_rr(gb, &gb.cpu.BC.BC),
             // INC C
@@ -468,7 +1087,7 @@ pub const Core = struct {
             // RRCA
             0x0F => rrca(gb),
             // STOP 0
-            0x10 => stop(gb),
+            // 0x10 => stop(gb),
             // LD DE,d16
             0x11 => ld_rr_d16(gb, &gb.cpu.DE.DE),
             // LD (DE),A
@@ -486,7 +1105,7 @@ pub const Core = struct {
             // JR r8
             0x18 => jr_r8(gb),
             // ADD HL,DE
-            0x19 => add_rr_rr(gb, gb.cpu.HL.HL, gb.cpu.DE.DE),
+            0x19 => add_hl_rr(gb, gb.cpu.DE.DE),
             // LD A,(DE)
             0x1A => ld_r_rr(gb, &gb.cpu.AF.S.A, gb.cpu.DE.DE),
             // DEC DE
@@ -514,11 +1133,11 @@ pub const Core = struct {
             // LD H,d8
             0x26 => ld_r_d8(gb, &gb.cpu.HL.S.H),
             // DAA
-            0x27 => daa(gb),
+            // 0x27 => daa(gb),
             // JR Z,r8
             0x28 => jr_z_r8(gb),
             // ADD HL,HL
-            0x29 => add_rr_rr(gb, gb.cpu.HL.HL, gb.cpu.HL.HL),
+            0x29 => add_hl_rr(gb, gb.cpu.HL.HL),
             // LD A,(HL+)
             0x2A => ld_r_hli(gb, &gb.cpu.AF.S.A),
             // DEC HL
@@ -540,19 +1159,19 @@ pub const Core = struct {
             // INC SP
             0x33 => inc_rr(gb, &gb.cpu.SP),
             // INC (HL)
-            0x34 => inc_rra(gb, gb.cpu.HL.HL),
+            0x34 => inc_dhl(gb),
             // DEC (HL)
-            0x35 => dec_rra(gb, gb.cpu.HL.HL),
+            0x35 => dec_dhl(gb),
             // LD (HL),d8
-            0x36 => ld_rr_d8(gb, gb.cpu.HL.HL),
+            0x36 => ld_dhl_d8(gb),
             // SCF
             0x37 => scf(gb),
             // JR C,r8
             0x38 => jr_c_r8(gb),
             // ADD HL,SP
-            0x39 => add_rr_rr(gb, gb.cpu.HL.HL, gb.cpu.SP),
+            0x39 => add_hl_rr(gb, gb.cpu.SP),
             // LD A,(HL-)
-            0x3A => ld_r_hld(gb),
+            0x3A => ld_r_hld(gb, &gb.cpu.AF.S.A),
             // DEC SP
             0x3B => dec_rr(gb, &gb.cpu.SP),
             // INC A
@@ -660,19 +1279,19 @@ pub const Core = struct {
             // LD L,A
             0x6F => ld_r_r(gb, &gb.cpu.HL.S.L, gb.cpu.AF.S.A),
             // LD (HL),B
-            0x70 => ld_rr_r(gb, gb.cpu.HL, gb.cpu.BC.S.B),
+            0x70 => ld_rr_r(gb, gb.cpu.HL.HL, gb.cpu.BC.S.B),
             // LD (HL),C
-            0x71 => ld_rr_r(gb, gb.cpu.HL, gb.cpu.BC.S.C),
+            0x71 => ld_rr_r(gb, gb.cpu.HL.HL, gb.cpu.BC.S.C),
             // LD (HL),D
-            0x72 => ld_rr_r(gb, gb.cpu.HL, gb.cpu.DE.S.D),
+            0x72 => ld_rr_r(gb, gb.cpu.HL.HL, gb.cpu.DE.S.D),
             // LD (HL),E
-            0x73 => ld_rr_r(gb, gb.cpu.HL, gb.cpu.DE.S.E),
+            0x73 => ld_rr_r(gb, gb.cpu.HL.HL, gb.cpu.DE.S.E),
             // LD (HL),H
-            0x74 => ld_rr_r(gb, gb.cpu.HL, gb.cpu.HL.S.H),
+            0x74 => ld_rr_r(gb, gb.cpu.HL.HL, gb.cpu.HL.S.H),
             // LD (HL),L
-            0x75 => ld_rr_r(gb, gb.cpu.HL, gb.cpu.HL.S.L),
+            0x75 => ld_rr_r(gb, gb.cpu.HL.HL, gb.cpu.HL.S.L),
             // HALT
-            0x76 => halt(gb),
+            // 0x76 => halt(gb),
             // LD (HL),A
             0x77 => ld_rr_r(gb, gb.cpu.HL.HL, gb.cpu.AF.S.A),
             // LD A,B
@@ -680,7 +1299,7 @@ pub const Core = struct {
             // LD A,C
             0x79 => ld_r_r(gb, &gb.cpu.AF.S.A, gb.cpu.BC.S.C),
             // LD A,D
-            0x7C => ld_r_r(gb, &gb.cpu.AF.S.A, gb.cpu.DE.S.D),
+            0x7A => ld_r_r(gb, &gb.cpu.AF.S.A, gb.cpu.DE.S.D),
             // LD A,E
             0x7B => ld_r_r(gb, &gb.cpu.AF.S.A, gb.cpu.DE.S.E),
             // LD A,H
@@ -700,11 +1319,11 @@ pub const Core = struct {
             // ADD A,E
             0x83 => add_r(gb, gb.cpu.DE.S.E),
             // ADD A,H
-            0x84 => add_r(gb, gb.cpu.HL.S.h),
+            0x84 => add_r(gb, gb.cpu.HL.S.H),
             // ADD A,L
             0x85 => add_r(gb, gb.cpu.HL.S.L),
             // ADD A,(HL)
-            0x86 => add_rr(gb, gb.cpu.HL.HL),
+            0x86 => add_hl(gb),
             // ADD A,A
             0x87 => add_r(gb, gb.cpu.AF.S.A),
             // ADC A,B
@@ -719,10 +1338,10 @@ pub const Core = struct {
             0x8C => adc_r(gb, gb.cpu.HL.S.H),
             // ADC A,L
             0x8D => adc_r(gb, gb.cpu.HL.S.L),
-            // ADC (HL)
-            0x8E => adc_rr(gb, gb.cpu.HL.HL),
+            // ADC A,(HL)
+            0x8E => adc_hl(gb),
             // ADC A,A
-            0x8F => adc_r(gb, gb.cpu.HL.S.A),
+            0x8F => adc_r(gb, gb.cpu.AF.S.A),
             // SUB B
             0x90 => sub_r(gb, &gb.cpu.BC.S.B),
             // SUB C
@@ -736,7 +1355,7 @@ pub const Core = struct {
             // SUB L
             0x95 => sub_r(gb, &gb.cpu.HL.S.L),
             // SUB (HL)
-            0x96 => sub_rr(gb, gb.cpu.HL.HL),
+            0x96 => sub_hl(gb),
             // SUB A
             0x97 => sub_r(gb, &gb.cpu.AF.S.A),
             // SBC A,B
@@ -752,25 +1371,25 @@ pub const Core = struct {
             // SBC A,L
             0x9D => sbc_r(gb, gb.cpu.HL.S.L),
             // SBC (HL)
-            0x9E => sbc_rr(gb, gb.cpu.HL.HL),
+            0x9E => sbc_hl(gb),
             // SBC A,A
-            0x9F => sbc_r(gb, gb.cpu.HL.S.A),
+            0x9F => sbc_r(gb, gb.cpu.AF.S.A),
             // AND B
-            0xA0 => and_r(gb, &gb.cpu.BC.S.B),
+            0xA0 => and_r(gb, gb.cpu.BC.S.B),
             // AND C
-            0xA1 => and_r(gb, &gb.cpu.BC.S.C),
+            0xA1 => and_r(gb, gb.cpu.BC.S.C),
             // AND D
-            0xA2 => and_r(gb, &gb.cpu.DE.S.D),
+            0xA2 => and_r(gb, gb.cpu.DE.S.D),
             // AND E
-            0xA3 => and_r(gb, &gb.cpu.DE.S.E),
+            0xA3 => and_r(gb, gb.cpu.DE.S.E),
             // AND H
-            0xA4 => and_r(gb, &gb.cpu.HL.S.H),
+            0xA4 => and_r(gb, gb.cpu.HL.S.H),
             // AND L
-            0xA5 => and_r(gb, &gb.cpu.HL.S.L),
+            0xA5 => and_r(gb, gb.cpu.HL.S.L),
             // AND (HL)
-            0xA6 => and_rr(gb, gb.cpu.HL.HL),
+            0xA6 => and_hl(gb),
             // AND A
-            0xA7 => and_r(gb, &gb.cpu.AF.S.A),
+            0xA7 => and_r(gb, gb.cpu.AF.S.A),
             // XOR A,B
             0xA8 => xor_r(gb, gb.cpu.BC.S.B),
             // XOR A,C
@@ -784,25 +1403,25 @@ pub const Core = struct {
             // XOR A,L
             0xAD => xor_r(gb, gb.cpu.HL.S.L),
             // XOR (HL)
-            0xAE => xor_rr(gb, gb.cpu.HL.HL),
+            0xAE => xor_hl(gb),
             // XOR A,A
-            0xAF => xor_r(gb, gb.cpu.HL.S.A),
-            // AND B
-            0xA0 => and_r(gb, &gb.cpu.BC.S.B),
+            0xAF => xor_r(gb, gb.cpu.AF.S.A),
+            // OR B
+            0xB0 => and_r(gb, gb.cpu.BC.S.B),
             // OR C
-            0xB1 => or_r(gb, &gb.cpu.BC.S.C),
+            0xB1 => or_r(gb, gb.cpu.BC.S.C),
             // OR D
-            0xB2 => or_r(gb, &gb.cpu.DE.S.D),
+            0xB2 => or_r(gb, gb.cpu.DE.S.D),
             // OR E
-            0xB3 => or_r(gb, &gb.cpu.DE.S.E),
+            0xB3 => or_r(gb, gb.cpu.DE.S.E),
             // OR H
-            0xB4 => or_r(gb, &gb.cpu.HL.S.H),
+            0xB4 => or_r(gb, gb.cpu.HL.S.H),
             // OR L
-            0xB5 => or_r(gb, &gb.cpu.HL.S.L),
+            0xB5 => or_r(gb, gb.cpu.HL.S.L),
             // OR (HL)
-            0xB6 => or_rr(gb, gb.cpu.HL.HL),
+            0xB6 => or_hl(gb),
             // OR A
-            0xB7 => or_r(gb, &gb.cpu.AF.S.A),
+            0xB7 => or_r(gb, gb.cpu.AF.S.A),
             // CP A,B
             0xB8 => cp_r(gb, gb.cpu.BC.S.B),
             // CP A,C
@@ -816,31 +1435,31 @@ pub const Core = struct {
             // CP A,L
             0xBD => cp_r(gb, gb.cpu.HL.S.L),
             // CP (HL)
-            0xBE => cp_rr(gb, gb.cpu.HL.HL),
+            0xBE => cp_hl(gb),
             // CP A,A
-            0xBF => cp_r(gb, gb.cpu.HL.S.A),
+            0xBF => cp_r(gb, gb.cpu.AF.S.A),
             // RET NZ
             0xC0 => ret_nz(gb),
             // POP BC
             0xC1 => pop_rr(gb, &(@bitCast(RegisterReference, gb.cpu.BC))),
             // JP NZ,a16
-            0xC2 => jp_nz(gb),
+            0xC2 => jp_nz_a16(gb),
             // JP a16
-            0xC3 => jp(gb),
+            0xC3 => jp_a16(gb),
             // CALL NZ,a16
-            0xC4 => call_nz(gb),
+            0xC4 => call_nz_a16(gb),
             // PUSH BC
             0xC5 => push_rr(gb, &(@bitCast(RegisterReference, gb.cpu.BC))),
             // ADD A,d8
             0xC6 => add_d8(gb),
             // RST 00H
-            0xC7 => rst(gb, 0x00),
+            0xC7 => rst(gb),
             // RET Z
             0xC8 => ret_z(gb),
             // RET
             0xC9 => ret(gb),
             // JP Z,a16
-            0xCA => jp_z(gb),
+            0xCA => jp_z_a16(gb),
             // Pefix CB
             0xCB => {
                 gb.cpu.PC += 1;
@@ -891,41 +1510,41 @@ pub const Core = struct {
                 }
             },
             // CALL Z,a16
-            0xCC => call_z(gb),
+            0xCC => call_z_a16(gb),
             // CALL nn
-            0xCD => call(gb),
+            0xCD => call_a16(gb),
             // ADC A,d8
-            0xCE => adc_r_d8(gb),
+            0xCE => adc_d8(gb),
             // RST 08H
-            0xCF => rst(gb, 0x08),
+            0xCF => rst(gb),
             // RET NC
             0xD0 => ret_nc(gb),
             // POP DE
             0xD1 => pop_rr(gb, &(@bitCast(RegisterReference, gb.cpu.DE))),
             // JP NC,a16
-            0xD2 => jp_nc(gb),
+            0xD2 => jp_nc_a16(gb),
             // CALL NC,a16
-            0xD4 => call_nc(gb),
+            0xD4 => call_nc_a16(gb),
             // PUSH DE
             0xD5 => push_rr(gb, &(@bitCast(RegisterReference, gb.cpu.DE))),
             // SUB d8
             0xD6 => sub_d8(gb),
             // RST 10H
-            0xD7 => rst(0x10),
+            0xD7 => rst(gb),
             // RET C
             0xD8 => ret_c(gb),
             // RETI
             0xD9 => reti(gb),
             // JP C,a16
-            0xDA => jp_c(gb),
+            0xDA => jp_c_a16(gb),
             // CALL C,a16
-            0xDC => call_c(gb),
+            0xDC => call_c_a16(gb),
             // SBC A,d8
             0xDE => sbc_d8(gb),
             // RST 18H
-            0xDF => rst(0x18),
+            0xDF => rst(gb),
             // LDH (a8), A | LD ($FF00+a8),A
-            0xE0 => ldh_a8_a,
+            0xE0 => ldh_a8_a(gb),
             // POP HL
             0xE1 => pop_rr(gb, &(@bitCast(RegisterReference, gb.cpu.HL))),
             // LD (A),(C) | LD ($FF00+C),A
@@ -935,17 +1554,17 @@ pub const Core = struct {
             // AND d8
             0xE6 => and_d8(gb),
             // RST 20H
-            0xE7 => rst(gb, 0x20),
+            0xE7 => rst(gb),
             // ADD SP,r8
-            0xE8 => add_rr_r8(gb, &gb.cpu.SP),
+            0xE8 => add_sp_r8(gb),
             // JP (HL)
-            0xE9 => jp_rr(gb, gb.cpu.HL),
+            0xE9 => jp_hl(gb),
             // LD (a16),A
             0xEA => ld_a16_a(gb),
             // XOR d8
             0xEE => xor_d8(gb),
             // RST 28H
-            0xEF => rst(gb, 0x28),
+            0xEF => rst(gb),
             // LDH A,(a8)
             0xF0 => ldh_a_a8(gb),
             // POP AF
@@ -959,11 +1578,11 @@ pub const Core = struct {
             // OR d8
             0xF6 => or_d8(gb),
             // RST 30H
-            0xF7 => rst(gb, 0x30),
+            0xF7 => rst(gb),
             // LD HL,SP+r8
             0xF8 => ld_hl_sp_r8(gb),
             // LD SP,HL
-            0xF9 => ld_rr_rr(gb, &gb.cpu.SP, gb.CPU.HL.HL),
+            0xF9 => ld_sp_hl(gb),
             // LD A,(a16)
             0xFA => ld_a_a16(gb),
             // EI
@@ -971,7 +1590,7 @@ pub const Core = struct {
             // CP d8
             0xFE => cp_d8(gb),
             // RST 38H
-            0xFF => rst(gb, 0x38),
+            0xFF => rst(gb),
             else => blk: {
                 gb.halt = true;
                 std.log.info("Unimplemented Instruction at PC=${X:0>4}:0x{X:0>2}", .{ gb.cpu.PC, gb.memory.read8(gb.cpu.PC) });
