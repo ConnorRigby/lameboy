@@ -20,7 +20,9 @@ pub const CPU = struct {
     AF: extern union {
         S: extern struct {
             /// Flags: z: zero, n: subtract, h: half-carry, c: carry
-            F: packed struct { z: u1, n: u1, h: u1, c: u1, unused: u4 },
+            F: packed struct { unused: u4, c: u1, h: u1, n: u1, z: u1 },
+            // F: packed struct { z: u1, n: u1, h: u1, c: u1, unused: u4 },
+
             A: u8,
         },
         AF: u16,

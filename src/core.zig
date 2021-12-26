@@ -9,6 +9,8 @@ const Memory = @import("memory.zig").Memory;
 const debugger = @import("debugger.zig");
 const Debugger = debugger.Debugger;
 
+const disassembler = @import("disassembler.zig");
+
 pub const RuntimeError = error{ InstructionNotImplemented, YouSuck };
 
 pub const Core = struct {
@@ -45,9 +47,11 @@ pub const Core = struct {
         core.tCycles += 4;
 
         r.* +%= 1;
+
+        // core.cpu.AF.S.F.c = 0;
         core.cpu.AF.S.F.n = 0;
-        core.cpu.AF.S.F.z = 0;
         core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
 
         if ((r.* & 0x0F) == 0)
             core.cpu.AF.S.F.h = 1;
@@ -68,9 +72,10 @@ pub const Core = struct {
         const value: u8 = core.memory.read8(core.cpu.HL.HL) + 1;
         core.memory.write8(core.cpu.HL.HL, value);
 
+        core.cpu.AF.S.F.c = 0;
         core.cpu.AF.S.F.n = 0;
-        core.cpu.AF.S.F.z = 0;
         core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
 
         if ((value & 0x0F) == 0)
             core.cpu.AF.S.F.h = 1;
@@ -84,9 +89,10 @@ pub const Core = struct {
         const value: u8 = core.memory.read8(core.cpu.HL.HL) - 1;
         core.memory.write8(core.cpu.HL.HL, value);
 
+        core.cpu.AF.S.F.c = 0;
         core.cpu.AF.S.F.n = 1;
-        core.cpu.AF.S.F.z = 0;
         core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
 
         if ((value & 0x0F) == 0)
             core.cpu.AF.S.F.h = 1;
@@ -109,9 +115,11 @@ pub const Core = struct {
 
         const value: u8 = r.* -% 1;
         r.* = value;
+
+        // core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 1;
         core.cpu.AF.S.F.h = 0;
         core.cpu.AF.S.F.z = 0;
-        core.cpu.AF.S.F.n = 1;
 
         if ((r.* & 0x0f) == 0xf)
             core.cpu.AF.S.F.h = 1;
@@ -133,7 +141,11 @@ pub const Core = struct {
         const d8: u8 = r.*;
         const a: u8 = core.cpu.AF.S.A;
         core.cpu.AF.S.A -%= d8;
+
+        core.cpu.AF.S.F.c = 0;
         core.cpu.AF.S.F.n = 1;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
 
         if (a == d8)
             core.cpu.AF.S.F.z = 1;
@@ -152,7 +164,11 @@ pub const Core = struct {
         const d8: u8 = core.memory.read8(core.cpu.HL.HL);
         const a: u8 = core.cpu.AF.S.A;
         core.cpu.AF.S.A -%= d8;
+
+        core.cpu.AF.S.F.c = 0;
         core.cpu.AF.S.F.n = 1;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
 
         if (a == d8)
             core.cpu.AF.S.F.z = 1;
@@ -172,7 +188,11 @@ pub const Core = struct {
         core.cpu.PC += 1;
         const a: u8 = core.cpu.AF.S.A;
         core.cpu.AF.S.A -%= d8;
+
+        core.cpu.AF.S.F.c = 0;
         core.cpu.AF.S.F.n = 1;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
 
         if (a == d8)
             core.cpu.AF.S.F.z = 1;
@@ -190,7 +210,11 @@ pub const Core = struct {
         const a: u8 = core.cpu.AF.S.A;
         const carry: u1 = @boolToInt(core.cpu.AF.S.F.c != 0);
         core.cpu.AF.S.A = (a - r - carry);
+
+        core.cpu.AF.S.F.c = 0;
         core.cpu.AF.S.F.n = 1;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
 
         if ((a - r - carry) == 0)
             core.cpu.AF.S.F.z = 1;
@@ -207,7 +231,11 @@ pub const Core = struct {
         const a: u8 = core.cpu.AF.S.A;
         const carry: u1 = @boolToInt(core.cpu.AF.S.F.c != 0);
         core.cpu.AF.S.A = (a - r - carry);
+
+        core.cpu.AF.S.F.c = 0;
         core.cpu.AF.S.F.n = 1;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
 
         if ((a - r - carry) == 0)
             core.cpu.AF.S.F.z = 1;
@@ -225,7 +253,11 @@ pub const Core = struct {
         const a: u8 = core.cpu.AF.S.A;
         const carry: u1 = @boolToInt(core.cpu.AF.S.F.c != 0);
         core.cpu.AF.S.A = (a - r - carry);
+
+        core.cpu.AF.S.F.c = 0;
         core.cpu.AF.S.F.n = 1;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
 
         if ((a - r - carry) == 0)
             core.cpu.AF.S.F.z = 1;
@@ -240,6 +272,12 @@ pub const Core = struct {
         core.tCycles += 4;
         const a: u8 = core.cpu.AF.S.A;
         core.cpu.AF.S.A += r;
+
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
+
         if (core.cpu.AF.S.A == 0)
             core.cpu.AF.S.F.z = 1;
         if ((a & 0xF) + (r & 0xF) > 0x0F)
@@ -255,11 +293,18 @@ pub const Core = struct {
         const r: u8 = core.memory.read8(core.cpu.HL.HL);
         const a: u8 = core.cpu.AF.S.A;
         core.cpu.AF.S.A +%= r;
+
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
+
         if ((a +% r) == 0)
             core.cpu.AF.S.F.z = 1;
         if ((a & 0xf) + (r & 0xf) > 0x0f)
             core.cpu.AF.S.F.h = 1;
-        if ((a +% r) > 0xff)
+
+        if (@intCast(u16, a) + @intCast(u16, r) > 0xff)
             core.cpu.AF.S.F.c = 1;
     }
 
@@ -271,6 +316,12 @@ pub const Core = struct {
         core.cpu.PC += 1;
         const a: u8 = core.cpu.AF.S.A;
         core.cpu.AF.S.A +%= r;
+
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
+
         if ((a +% r) == 0)
             core.cpu.AF.S.F.z = 1;
         if ((a & 0xf) + (r & 0xf) > 0x0f)
@@ -285,9 +336,11 @@ pub const Core = struct {
         const hl: u16 = core.cpu.HL.HL;
 
         core.cpu.HL.HL += rr;
-        core.cpu.AF.S.F.n = 0;
+
         core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 0;
         core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
 
         if ((((hl & 0xFFF) + (rr & 0xFFF)) & 0x1000) != 0)
             core.cpu.AF.S.F.h = 1;
@@ -302,6 +355,12 @@ pub const Core = struct {
         const a: u8 = core.cpu.AF.S.A;
         const carry: u1 = @boolToInt(core.cpu.AF.S.F.c == 0);
         core.cpu.AF.S.A = (a + r + carry);
+
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 1;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
+
         if ((a + r + carry) == 0)
             core.cpu.AF.S.F.z = 1;
         if ((a & 0xF) + (r & 0xF) + carry > 0x0F)
@@ -317,6 +376,12 @@ pub const Core = struct {
         const r: u8 = core.memory.read8(core.cpu.HL.HL);
         const carry: u1 = @boolToInt(core.cpu.AF.S.F.c == 0);
         core.cpu.AF.S.A = (a + r + carry);
+
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
+
         if ((a + r + carry) == 0)
             core.cpu.AF.S.F.z = 1;
         if ((a & 0xF) + (r & 0xF) + carry > 0x0F)
@@ -332,12 +397,18 @@ pub const Core = struct {
         const r: u8 = core.memory.read8(core.cpu.PC);
         core.cpu.PC += 1;
         const carry: u1 = @boolToInt(core.cpu.AF.S.F.c == 0);
-        core.cpu.AF.S.A = (a + r + carry);
-        if ((a + r + carry) == 0)
+        core.cpu.AF.S.A = (a +% r +% carry);
+
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 1;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
+
+        if ((a +% r +% carry) == 0)
             core.cpu.AF.S.F.z = 1;
-        if ((a & 0xF) + (r & 0xF) + carry > 0x0F)
+        if ((a & 0xF) +% (r & 0xF) + carry > 0x0F)
             core.cpu.AF.S.F.h = 1;
-        if ((a + r) + carry > 0xFF)
+        if ((a +% r) +% carry > 0xFF)
             core.cpu.AF.S.F.c = 1;
     }
 
@@ -513,6 +584,11 @@ pub const Core = struct {
         core.cpu.AF.AF &= 0xFF00;
         core.cpu.AF.S.A <<= 1;
 
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
+
         if (carry)
             core.cpu.AF.AF |= 0x0100;
 
@@ -526,6 +602,12 @@ pub const Core = struct {
 
         const carry: bool = (core.cpu.AF.AF & 0x8000) != 0;
         core.cpu.AF.AF = (core.cpu.AF.AF & 0xFF00) << 1;
+
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
+
         if (carry) {
             core.cpu.AF.S.F.c = 1;
             core.cpu.AF.AF |= 0x0100;
@@ -538,6 +620,12 @@ pub const Core = struct {
 
         const carry: bool = (core.cpu.AF.AF * 0x100) != 0;
         core.cpu.AF.AF = (core.cpu.AF.AF >> 1) & 0xFF00;
+
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
+
         if (carry) {
             core.cpu.AF.S.F.c = 1;
             core.cpu.AF.AF |= 0x8000;
@@ -549,9 +637,15 @@ pub const Core = struct {
         core.tCycles += 4;
 
         const bit1: bool = (core.cpu.AF.AF & 0x0100) != 0;
-        const carry: bool = (core.cpu.AF.AF * 0x100) != 0;
+        const carry: bool = (core.cpu.AF.AF *% 0x100) != 0;
 
         core.cpu.AF.AF = (core.cpu.AF.AF >> 1) & 0xFF00;
+
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
+
         if (carry)
             core.cpu.AF.AF |= 0x8000;
         if (bit1)
@@ -562,13 +656,17 @@ pub const Core = struct {
         core.cpu.PC += 1;
         core.tCycles += 4;
         core.cpu.AF.AF ^= 0xFF00;
-        core.cpu.AF.S.F.c = 1;
+
         core.cpu.AF.S.F.n = 1;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
+        core.cpu.AF.S.F.c = 1;
     }
 
     pub fn scf(core: *Core) void {
         core.cpu.PC += 1;
         core.tCycles += 4;
+        core.cpu.AF.S.F.z = 0;
         core.cpu.AF.S.F.c = 1;
         core.cpu.AF.S.F.h = 0;
         core.cpu.AF.S.F.n = 0;
@@ -589,7 +687,10 @@ pub const Core = struct {
         const a: u8 = core.cpu.AF.S.A;
 
         core.cpu.AF.AF &= 0xFF00;
+        core.cpu.AF.S.F.c = 0;
         core.cpu.AF.S.F.n = 1;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
 
         if (a == r)
             core.cpu.AF.S.F.z = 1;
@@ -609,7 +710,10 @@ pub const Core = struct {
         const a: u8 = core.cpu.AF.S.A;
 
         core.cpu.AF.AF &= 0xFF00;
+        core.cpu.AF.S.F.c = 0;
         core.cpu.AF.S.F.n = 1;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
 
         if (a == r)
             core.cpu.AF.S.F.z = 1;
@@ -618,7 +722,7 @@ pub const Core = struct {
             core.cpu.AF.S.F.h = 1;
 
         if (a < r)
-            core.cpu.AF.S.F.h = 1;
+            core.cpu.AF.S.F.c = 1;
     }
 
     pub fn cp_d8(core: *Core) void {
@@ -630,7 +734,10 @@ pub const Core = struct {
         const a: u8 = core.cpu.AF.S.A;
 
         core.cpu.AF.AF &= 0xFF00;
+        core.cpu.AF.S.F.c = 0;
         core.cpu.AF.S.F.n = 1;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
 
         if (a == r)
             core.cpu.AF.S.F.z = 1;
@@ -639,7 +746,7 @@ pub const Core = struct {
             core.cpu.AF.S.F.h = 1;
 
         if (a < r)
-            core.cpu.AF.S.F.h = 1;
+            core.cpu.AF.S.F.c = 1;
     }
 
     pub fn cp_rr(core: *Core, rr: u16) void {
@@ -650,7 +757,10 @@ pub const Core = struct {
         const a: u8 = core.cpu.AF.S.A;
 
         core.cpu.AF.AF &= 0xFF00;
+        core.cpu.AF.S.F.c = 0;
         core.cpu.AF.S.F.n = 1;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
 
         if (a == d8)
             core.cpu.AF.S.F.z = 1;
@@ -659,7 +769,7 @@ pub const Core = struct {
             core.cpu.AF.S.F.h = 1;
 
         if (a < d8)
-            core.cpu.AF.S.F.h = 1;
+            core.cpu.AF.S.F.c = 1;
     }
 
     pub fn pop_rr(core: *Core, rr: *RegisterReference) void {
@@ -668,11 +778,13 @@ pub const Core = struct {
 
         const msb: u8 = core.memory.read8(core.cpu.SP);
         core.cpu.SP += 1;
-        rr.*.S.ry = msb;
+        rr.*.S.rx = msb;
 
         const lsb: u8 = core.memory.read8(core.cpu.SP);
         core.cpu.SP += 1;
-        rr.*.S.rx = lsb;
+        rr.*.S.ry = lsb;
+
+        core.cpu.AF.AF &= 0xFFF0; // Make sure we don't set impossible flags on F! See Blargg's PUSH AF test.
     }
 
     pub fn push_rr(core: *Core, rr: *RegisterReference) void {
@@ -680,10 +792,10 @@ pub const Core = struct {
         core.tCycles += 16;
 
         core.cpu.SP -= 1;
-        core.memory.write8(core.cpu.SP, rr.*.S.rx);
+        core.memory.write8(core.cpu.SP, rr.*.S.ry);
 
         core.cpu.SP -= 1;
-        core.memory.write8(core.cpu.SP, rr.*.S.ry);
+        core.memory.write8(core.cpu.SP, rr.*.S.rx);
     }
 
     pub fn call_a16(core: *Core) void {
@@ -709,8 +821,11 @@ pub const Core = struct {
 
     pub fn call_nz_a16(core: *Core) void {
         if (core.cpu.AF.S.F.z != 1) {
+            // std.log.info("(yes)CALL NZ a16", .{});
             call_a16(core);
         } else {
+            // std.log.info("(no)CALL NZ a16", .{});
+            core.cpu.PC += 3;
             core.tCycles += 12;
         }
     }
@@ -719,6 +834,7 @@ pub const Core = struct {
         if (core.cpu.AF.S.F.z == 1) {
             call_a16(core);
         } else {
+            core.cpu.PC += 3;
             core.tCycles += 12;
         }
     }
@@ -727,6 +843,7 @@ pub const Core = struct {
         if (core.cpu.AF.S.F.c != 1) {
             call_a16(core);
         } else {
+            core.cpu.PC += 3;
             core.tCycles += 12;
         }
     }
@@ -735,6 +852,7 @@ pub const Core = struct {
         if (core.cpu.AF.S.F.c == 1) {
             call_a16(core);
         } else {
+            core.cpu.PC += 3;
             core.tCycles += 12;
         }
     }
@@ -944,7 +1062,12 @@ pub const Core = struct {
         core.cpu.PC += 1;
         const a: u8 = core.cpu.AF.S.A;
         core.cpu.AF.S.A = @as(u8, (a & r) <<| 8);
+
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 0;
         core.cpu.AF.S.F.h = 1;
+        core.cpu.AF.S.F.z = 0;
+
         if ((a & r) == 0)
             core.cpu.AF.S.F.z = 1;
     }
@@ -955,7 +1078,12 @@ pub const Core = struct {
         const offset: u8 = core.memory.read8(core.cpu.PC);
         core.cpu.PC += 1;
         core.cpu.SP += offset;
+
         core.cpu.AF.AF &= 0xFF00;
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
 
         if ((sp & 0xF) + (offset & 0xF) > 0xF)
             core.cpu.AF.S.F.h = 1;
@@ -968,8 +1096,14 @@ pub const Core = struct {
         core.tCycles += 1;
         core.cpu.AF.S.A ^= r;
 
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
+
         if (core.cpu.AF.S.A == 0)
             core.cpu.AF.S.F.z = 1;
+        // std.log.info("XOR ${B:0>4}", .{core.cpu.AF.S.F});
     }
 
     pub fn xor_hl(core: *Core) void {
@@ -977,6 +1111,11 @@ pub const Core = struct {
         core.tCycles += 8;
         const r: u8 = core.memory.read8(core.cpu.HL.HL);
         core.cpu.AF.S.A ^= r;
+
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
 
         if (core.cpu.AF.S.A == 0)
             core.cpu.AF.S.F.z = 1;
@@ -989,6 +1128,11 @@ pub const Core = struct {
         core.cpu.PC += 1;
         core.cpu.AF.S.A ^= r;
 
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
+
         if (core.cpu.AF.S.A == 0)
             core.cpu.AF.S.F.z = 1;
     }
@@ -999,6 +1143,11 @@ pub const Core = struct {
 
         const a: u8 = core.cpu.AF.S.A;
         core.cpu.AF.S.A |= r;
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
+
         if ((a | r) == 0)
             core.cpu.AF.S.F.z = 1;
     }
@@ -1010,6 +1159,12 @@ pub const Core = struct {
         const r: u8 = core.memory.read8(core.cpu.HL.HL);
         const a: u8 = core.cpu.AF.S.A;
         core.cpu.AF.S.A |= r;
+
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
+
         if ((a | r) == 0)
             core.cpu.AF.S.F.z = 1;
     }
@@ -1022,6 +1177,12 @@ pub const Core = struct {
         core.cpu.PC += 1;
         const a: u8 = core.cpu.AF.S.A;
         core.cpu.AF.S.A |= r;
+
+        core.cpu.AF.S.F.c = 0;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.h = 0;
+        core.cpu.AF.S.F.z = 0;
+
         if ((a | r) == 0)
             core.cpu.AF.S.F.z = 1;
     }
@@ -1050,9 +1211,259 @@ pub const Core = struct {
         std.log.info("rst ${x:0>4}", .{core.cpu.PC});
     }
 
+    pub fn rlc_r(core: *Core, r: *u8) void {
+        const carry: bool = (r.* & 0x80) != 0;
+        core.cpu.AF.AF &= 0xFF00;
+        const value = (r.* << 1) | @as(u8, @boolToInt(carry));
+        if (carry)
+            core.cpu.AF.S.F.c = 1;
+        if (value == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn rlc_hl(core: *Core) void {
+        core.tCycles += 8;
+        core.cpu.AF.AF &= 0xFF00;
+        const r: u8 = core.memory.read8(core.cpu.HL.HL);
+        const carry: bool = (r & 0x80) != 0;
+        const value = (r << 1) | @intCast(u8, @boolToInt(carry));
+        core.memory.write8(core.cpu.HL.HL, value);
+        if (carry)
+            core.cpu.AF.S.F.c = 1;
+        if (value == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn rl_r(core: *Core, r: *u8) void {
+        const carry: bool = core.cpu.AF.S.F.c != 0;
+        const bit7: bool = (r.* & 0x80) != 0;
+        core.cpu.AF.AF &= 0xFF00;
+        const value: u8 = (r.* << 1) | @as(u8, @boolToInt(carry));
+        r.* = value;
+        if (bit7)
+            core.cpu.AF.S.F.c = 1;
+        if (value == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn rl_hl(core: *Core) void {
+        const r: u8 = core.memory.read8(core.cpu.HL.HL);
+        core.tCycles += 8;
+        const carry: bool = core.cpu.AF.S.F.c != 0;
+        const bit7: bool = (r & 0x80) != 0;
+        core.cpu.AF.AF &= 0xFF00;
+        const value: u8 = (r << 1) | @as(u8, @boolToInt(carry));
+        core.memory.write8(core.cpu.HL.HL, value);
+        if (bit7)
+            core.cpu.AF.S.F.c = 1;
+        if (value == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn rrc_r(core: *Core, r: *u8) void {
+        const carry: bool = (r.* & 0x01) != 0;
+        core.cpu.AF.AF &= 0xFF00;
+        const value = (r.* >> 1) | @as(u8, @boolToInt(carry)) << 7;
+        r.* = value;
+        if (carry)
+            core.cpu.AF.S.F.c = 1;
+        if (value == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn rrc_hl(core: *Core) void {
+        const r: u8 = core.memory.read8(core.cpu.HL.HL);
+        core.cpu.AF.AF &= 0xFF00;
+        const carry: bool = (r & 0x01) != 0;
+        core.tCycles += 8;
+        const value = (r >> 1) | @as(u8, @boolToInt(carry)) << 7;
+        if (carry)
+            core.cpu.AF.S.F.c = 1;
+        if (value == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn rr_r(core: *Core, r: *u8) void {
+        const carry: bool = core.cpu.AF.S.F.c != 0;
+        const value = (r.* >> 1) | (@as(u8, @boolToInt(carry)) << 7);
+        const bit1: bool = (value & 0x1) != 0;
+        r.* = value;
+        if (bit1)
+            core.cpu.AF.S.F.c = 1;
+        if (value == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn rr_hl(core: *Core) void {
+        const carry: bool = core.cpu.AF.S.F.c != 0;
+        const r: u8 = core.memory.read8(core.cpu.HL.HL);
+        const value = (r >> 1) | (@as(u8, @boolToInt(carry)) << 7);
+        core.tCycles += 8;
+        core.memory.write8(core.cpu.HL.HL, value);
+        const bit1: bool = (value & 0x1) != 0;
+        if (bit1)
+            core.cpu.AF.S.F.c = 1;
+        if (value == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn sla_r(core: *Core, r: *u8) void {
+        const carry: bool = (r.* & 0x80) != 0;
+        core.cpu.AF.AF &= 0xFF00;
+        const value: u8 = (r.* << 1);
+        r.* = value;
+        if (carry)
+            core.cpu.AF.S.F.c = 1;
+        if ((value & 0x7F) == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn sla_hl(core: *Core) void {
+        const r: u8 = core.memory.read8(core.cpu.HL.HL);
+        core.tCycles += 8;
+        const carry: bool = (r & 0x80) != 0;
+        core.cpu.AF.AF &= 0xFF00;
+        const value: u8 = (r << 1);
+        core.memory.write8(core.cpu.HL.HL, r);
+        if (carry)
+            core.cpu.AF.S.F.c = 1;
+        if ((value & 0x7F) == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn sra_r(core: *Core, r: *u8) void {
+        const bit7: u1 = @intCast(u1, r.* & 0x80);
+        core.cpu.AF.AF &= 0xFF00;
+        if ((r.* & 1) != 0)
+            core.cpu.AF.S.F.c = 1;
+        const value: u8 = (r.* >> 1) | bit7;
+        r.* = value;
+        if (value == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn sra_hl(core: *Core) void {
+        const r: u8 = core.memory.read8(core.cpu.HL.HL);
+        core.tCycles += 8;
+        const bit7: u1 = @intCast(u1, r & 0x80);
+        core.cpu.AF.AF &= 0xFF00;
+        if ((r & 1) != 0)
+            core.cpu.AF.S.F.c = 1;
+        const value: u8 = (r >> 1) | bit7;
+        core.memory.write8(core.cpu.HL.HL, value);
+        if (value == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn swap_r(core: *Core, r: *u8) void {
+        core.cpu.AF.AF &= 0xFF00;
+        r.* = (r.* >> 4) | (r.* << 4);
+        if (r.* == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn swap_hl(core: *Core) void {
+        const r: u8 = core.memory.read8(core.cpu.HL.HL);
+        core.tCycles += 8;
+        core.cpu.AF.AF &= 0xFF00;
+        core.memory.write8(core.cpu.HL.HL, (r >> 4) | (r << 4));
+        if (r == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn srl_r(core: *Core, r: *u8) void {
+        core.cpu.AF.AF &= 0xFF00;
+        r.* = (r.* >> 1);
+        if ((r.* & 1) != 0)
+            core.cpu.AF.S.F.c = 1;
+        if ((r.* >> 1) == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn srl_hl(core: *Core) void {
+        core.cpu.AF.AF &= 0xFF00;
+        const r: u8 = core.memory.read8(core.cpu.HL.HL);
+        core.tCycles += 8;
+        core.memory.write8(core.cpu.HL.HL, (r >> 1));
+        if ((r & 1) != 0)
+            core.cpu.AF.S.F.c = 1;
+        if ((r >> 1) == 0)
+            core.cpu.AF.S.F.z = 1;
+    }
+
+    pub fn bit_r(core: *Core, which_bit: u3, r: *u8) void {
+        core.cpu.AF.S.F.h = 1;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.z = 0;
+
+        core.cpu.AF.S.F.z = @intCast(u1, ((r.* >> which_bit) & 1) ^ 1);
+    }
+
+    pub fn bit_hl(core: *Core, which_bit: u3) void {
+        const r: u8 = core.memory.read8(core.cpu.HL.HL);
+        core.tCycles += 8;
+        core.cpu.AF.S.F.h = 1;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.z = 0;
+
+        core.cpu.AF.S.F.z = @intCast(u1, ((r >> which_bit) & 1) ^ 1);
+    }
+
+    pub fn res_r(core: *Core, bit: u3, r: *u8) void {
+        core.cpu.AF.S.F.h = 1;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.z = 0;
+
+        core.cpu.AF.S.F.z = @intCast(u1, ((r.* >> bit) & 1) ^ 1);
+        r.* = r.* & ~bit;
+    }
+
+    pub fn res_hl(core: *Core, bit: u3) void {
+        const r: u8 = core.memory.read8(core.cpu.HL.HL);
+        core.tCycles += 8;
+        core.cpu.AF.S.F.h = 1;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.z = 0;
+
+        core.cpu.AF.S.F.z = @intCast(u1, ((r >> bit) & 1) ^ 1);
+        core.memory.write8(core.cpu.HL.HL, r & ~bit);
+    }
+
+    pub fn set_r(core: *Core, bit: u3, r: *u8) void {
+        core.cpu.AF.S.F.h = 1;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.z = 0;
+
+        core.cpu.AF.S.F.z = @intCast(u1, ((r.* >> bit) & 1) ^ 1);
+        r.* = r.* | bit;
+    }
+
+    pub fn set_hl(core: *Core, bit: u3) void {
+        const r: u8 = core.memory.read8(core.cpu.HL.HL);
+        core.tCycles += 8;
+        core.cpu.AF.S.F.h = 1;
+        core.cpu.AF.S.F.n = 0;
+        core.cpu.AF.S.F.z = 0;
+
+        core.cpu.AF.S.F.z = @intCast(u1, ((r >> bit) & 1) ^ 1);
+        core.memory.write8(core.cpu.HL.HL, r | bit);
+    }
+
     pub fn step(gb: *Core) !void {
         const opcode: u8 = gb.memory.read8(gb.cpu.PC);
+        // if (gb.cpu.PC > 0x00FE)
+        //     return RuntimeError.YouSuck;
+        const writer = std.io.getStdOut().writer();
+        if (gb.cpu.PC >= 0x0100) {
+            writer.print("A: {X:0>2} F: {X:0>2} B: {X:0>2} C: {X:0>2} D: {X:0>2} E: {X:0>2} H: {X:0>2} L: {X:0>2} SP: {X:0>4} PC: 00:{X:0>4} ({X:0>2} {X:0>2} {X:0>2} {X:0>2})\n", .{
+                gb.cpu.AF.S.A,              @bitCast(u8, (gb.cpu.AF.S.F)),  gb.cpu.BC.S.B,                  gb.cpu.BC.S.C,                  gb.cpu.DE.S.D, gb.cpu.DE.S.E, gb.cpu.HL.S.H, gb.cpu.HL.S.L, gb.cpu.SP, gb.cpu.PC,
+                gb.memory.read8(gb.cpu.PC), gb.memory.read8(gb.cpu.PC + 1), gb.memory.read8(gb.cpu.PC + 2), gb.memory.read8(gb.cpu.PC + 3),
+            }) catch return;
+        }
+        // A: 01 F: B0 B: 00 C: 13 D: 00 E: D8 H: 01 L: 4D SP: FFFE PC: 00:0100 (00 C3 13 02)
+
         // std.log.info("PC=${x:0>4} OP=${x:0>2} {s}", .{ gb.cpu.PC, opcode, disassembler.disassemble(opcode) });
+
         switch (opcode) {
             // NOP
             0 => nop(gb),
@@ -1462,51 +1873,288 @@ pub const Core = struct {
             0xCA => jp_z_a16(gb),
             // Pefix CB
             0xCB => {
-                gb.cpu.PC += 1;
-                gb.tCycles += 4;
+                gb.cpu.PC += 2;
+                gb.tCycles += 8;
                 switch (gb.memory.read8(gb.cpu.PC)) {
-                    // RL C
-                    0x11 => cblk: {
-                        gb.cpu.PC += 1;
-                        gb.tCycles += 8;
-                        gb.cpu.AF.S.F.h = 0;
-                        gb.cpu.AF.S.F.n = 0;
+                    0x00 => rlc_r(gb, &gb.cpu.BC.S.B),
+                    0x01 => rlc_r(gb, &gb.cpu.BC.S.C),
+                    0x02 => rlc_r(gb, &gb.cpu.DE.S.D),
+                    0x03 => rlc_r(gb, &gb.cpu.DE.S.E),
+                    0x04 => rlc_r(gb, &gb.cpu.HL.S.H),
+                    0x05 => rlc_r(gb, &gb.cpu.HL.S.L),
+                    0x06 => rlc_hl(gb),
+                    0x07 => rlc_r(gb, &gb.cpu.AF.S.A),
 
-                        const carry: u1 = gb.cpu.AF.S.F.c;
-                        // std.log.info("RL C before: {x:0>1} {b:0>8}", .{ gb.cpu.AF.S.F.c, gb.cpu.BC.S.C });
-                        gb.cpu.AF.S.F.c = @intCast(u1, ((gb.cpu.BC.S.C >> 7) & 0x01));
-                        gb.cpu.BC.S.C <<= 1;
+                    0x08 => rrc_r(gb, &gb.cpu.BC.S.B),
+                    0x09 => rrc_r(gb, &gb.cpu.BC.S.C),
+                    0x0A => rrc_r(gb, &gb.cpu.DE.S.D),
+                    0x0B => rrc_r(gb, &gb.cpu.DE.S.E),
+                    0x0C => rrc_r(gb, &gb.cpu.HL.S.H),
+                    0x0D => rrc_r(gb, &gb.cpu.HL.S.L),
+                    0x0E => rrc_hl(gb),
+                    0x0F => rrc_r(gb, &gb.cpu.AF.S.A),
 
-                        if (carry == 1) {
-                            gb.cpu.BC.S.C |= 0x1 << 0;
-                        }
+                    0x10 => rl_r(gb, &gb.cpu.BC.S.B),
+                    0x11 => rl_r(gb, &gb.cpu.BC.S.C),
+                    0x12 => rl_r(gb, &gb.cpu.DE.S.D),
+                    0x13 => rl_r(gb, &gb.cpu.DE.S.E),
+                    0x14 => rl_r(gb, &gb.cpu.HL.S.H),
+                    0x15 => rl_r(gb, &gb.cpu.HL.S.L),
+                    0x16 => rl_hl(gb),
+                    0x17 => rl_r(gb, &gb.cpu.AF.S.A),
+                    0x18 => rr_r(gb, &gb.cpu.BC.S.B),
+                    0x19 => rr_r(gb, &gb.cpu.BC.S.C),
+                    0x1A => rr_r(gb, &gb.cpu.DE.S.D),
+                    0x1B => rr_r(gb, &gb.cpu.DE.S.E),
+                    0x1C => rr_r(gb, &gb.cpu.HL.S.H),
+                    0x1D => rr_r(gb, &gb.cpu.HL.S.L),
+                    0x1E => rr_hl(gb),
+                    0x1F => rr_r(gb, &gb.cpu.AF.S.A),
 
-                        if (gb.cpu.BC.S.C == 0) {
-                            gb.cpu.AF.S.F.z = 1;
-                        } else {
-                            gb.cpu.AF.S.F.z = 0;
-                        }
+                    0x20 => sla_r(gb, &gb.cpu.BC.S.B),
+                    0x21 => sla_r(gb, &gb.cpu.BC.S.C),
+                    0x22 => sla_r(gb, &gb.cpu.DE.S.D),
+                    0x23 => sla_r(gb, &gb.cpu.DE.S.E),
+                    0x24 => sla_r(gb, &gb.cpu.HL.S.H),
+                    0x25 => sla_r(gb, &gb.cpu.HL.S.L),
+                    0x26 => sla_hl(gb),
+                    0x27 => sla_r(gb, &gb.cpu.AF.S.A),
+                    0x28 => sra_r(gb, &gb.cpu.BC.S.B),
+                    0x29 => sra_r(gb, &gb.cpu.BC.S.C),
+                    0x2A => sra_r(gb, &gb.cpu.DE.S.D),
+                    0x2B => sra_r(gb, &gb.cpu.DE.S.E),
+                    0x2C => sra_r(gb, &gb.cpu.HL.S.H),
+                    0x2D => sra_r(gb, &gb.cpu.HL.S.L),
+                    0x2E => sra_hl(gb),
+                    0x2F => sra_r(gb, &gb.cpu.AF.S.A),
 
-                        // std.log.info("RL C after: {x:0>1} {b:0>8} {x:0>1} ", .{ gb.cpu.AF.S.F.c, gb.cpu.BC.S.C, carry });
-                        break :cblk;
-                    },
-                    // BIT 7, H
-                    0x7C => cblk: {
-                        gb.cpu.PC += 1;
-                        gb.tCycles += 4;
-                        gb.cpu.AF.S.F.h = 1;
-                        gb.cpu.AF.S.F.n = 0;
-                        gb.cpu.AF.S.F.z = 0;
+                    0x30 => swap_r(gb, &gb.cpu.BC.S.B),
+                    0x31 => swap_r(gb, &gb.cpu.BC.S.C),
+                    0x32 => swap_r(gb, &gb.cpu.DE.S.D),
+                    0x33 => swap_r(gb, &gb.cpu.DE.S.E),
+                    0x34 => swap_r(gb, &gb.cpu.HL.S.H),
+                    0x35 => swap_r(gb, &gb.cpu.HL.S.L),
+                    0x36 => swap_hl(gb),
+                    0x37 => swap_r(gb, &gb.cpu.AF.S.A),
+                    0x38 => srl_r(gb, &gb.cpu.BC.S.B),
+                    0x39 => srl_r(gb, &gb.cpu.BC.S.C),
+                    0x3A => srl_r(gb, &gb.cpu.DE.S.D),
+                    0x3B => srl_r(gb, &gb.cpu.DE.S.E),
+                    0x3C => srl_r(gb, &gb.cpu.HL.S.H),
+                    0x3D => srl_r(gb, &gb.cpu.HL.S.L),
+                    0x3E => srl_hl(gb),
+                    0x3F => srl_r(gb, &gb.cpu.AF.S.A),
 
-                        gb.cpu.AF.S.F.z = @intCast(u1, ((gb.cpu.HL.S.H >> 7) & 1) ^ 1);
-                        break :cblk;
-                    },
-                    else => cblk: {
-                        gb.halt = true;
-                        // std.log.info("Unimplemented CB Instruction 0x{X}", .{gb.memory.Raw[gb.cpu.PC]});
-                        // std.log.info("Flags={B:0>1}", .{gb.cpu.AF.S.F});
-                        break :cblk return RuntimeError.InstructionNotImplemented;
-                    },
+                    0x40 => bit_r(gb, 0, &gb.cpu.BC.S.B),
+                    0x41 => bit_r(gb, 0, &gb.cpu.BC.S.C),
+                    0x42 => bit_r(gb, 0, &gb.cpu.DE.S.D),
+                    0x43 => bit_r(gb, 0, &gb.cpu.DE.S.E),
+                    0x44 => bit_r(gb, 0, &gb.cpu.HL.S.H),
+                    0x45 => bit_r(gb, 0, &gb.cpu.HL.S.L),
+                    0x46 => bit_hl(gb, 0),
+                    0x47 => bit_r(gb, 1, &gb.cpu.AF.S.A),
+                    0x48 => bit_r(gb, 1, &gb.cpu.BC.S.B),
+                    0x49 => bit_r(gb, 1, &gb.cpu.BC.S.C),
+                    0x4A => bit_r(gb, 1, &gb.cpu.DE.S.D),
+                    0x4B => bit_r(gb, 1, &gb.cpu.DE.S.E),
+                    0x4C => bit_r(gb, 1, &gb.cpu.HL.S.H),
+                    0x4D => bit_r(gb, 1, &gb.cpu.HL.S.L),
+                    0x4E => bit_hl(gb, 1),
+                    0x4F => bit_r(gb, 1, &gb.cpu.AF.S.A),
+
+                    0x50 => bit_r(gb, 2, &gb.cpu.BC.S.B),
+                    0x51 => bit_r(gb, 2, &gb.cpu.BC.S.C),
+                    0x52 => bit_r(gb, 2, &gb.cpu.DE.S.D),
+                    0x53 => bit_r(gb, 2, &gb.cpu.DE.S.E),
+                    0x54 => bit_r(gb, 2, &gb.cpu.HL.S.H),
+                    0x55 => bit_r(gb, 2, &gb.cpu.HL.S.L),
+                    0x56 => bit_hl(gb, 2),
+                    0x57 => bit_r(gb, 2, &gb.cpu.AF.S.A),
+                    0x58 => bit_r(gb, 3, &gb.cpu.BC.S.B),
+                    0x59 => bit_r(gb, 3, &gb.cpu.BC.S.C),
+                    0x5A => bit_r(gb, 3, &gb.cpu.DE.S.D),
+                    0x5B => bit_r(gb, 3, &gb.cpu.DE.S.E),
+                    0x5C => bit_r(gb, 3, &gb.cpu.HL.S.H),
+                    0x5D => bit_r(gb, 3, &gb.cpu.HL.S.L),
+                    0x5E => bit_hl(gb, 3),
+                    0x5F => bit_r(gb, 3, &gb.cpu.AF.S.A),
+
+                    0x60 => bit_r(gb, 4, &gb.cpu.BC.S.B),
+                    0x61 => bit_r(gb, 4, &gb.cpu.BC.S.C),
+                    0x62 => bit_r(gb, 4, &gb.cpu.DE.S.D),
+                    0x63 => bit_r(gb, 4, &gb.cpu.DE.S.E),
+                    0x64 => bit_r(gb, 4, &gb.cpu.HL.S.H),
+                    0x65 => bit_r(gb, 4, &gb.cpu.HL.S.L),
+                    0x66 => bit_hl(gb, 4),
+                    0x67 => bit_r(gb, 4, &gb.cpu.AF.S.A),
+                    0x68 => bit_r(gb, 5, &gb.cpu.BC.S.B),
+                    0x69 => bit_r(gb, 5, &gb.cpu.BC.S.C),
+                    0x6A => bit_r(gb, 5, &gb.cpu.DE.S.D),
+                    0x6B => bit_r(gb, 5, &gb.cpu.DE.S.E),
+                    0x6C => bit_r(gb, 5, &gb.cpu.HL.S.H),
+                    0x6D => bit_r(gb, 5, &gb.cpu.HL.S.L),
+                    0x6E => bit_hl(gb, 5),
+                    0x6F => bit_r(gb, 5, &gb.cpu.AF.S.A),
+
+                    0x70 => bit_r(gb, 6, &gb.cpu.BC.S.B),
+                    0x71 => bit_r(gb, 6, &gb.cpu.BC.S.C),
+                    0x72 => bit_r(gb, 6, &gb.cpu.DE.S.D),
+                    0x73 => bit_r(gb, 6, &gb.cpu.DE.S.E),
+                    0x74 => bit_r(gb, 6, &gb.cpu.HL.S.H),
+                    0x75 => bit_r(gb, 6, &gb.cpu.HL.S.L),
+                    0x76 => bit_hl(gb, 6),
+                    0x77 => bit_r(gb, 6, &gb.cpu.AF.S.A),
+                    0x78 => bit_r(gb, 7, &gb.cpu.BC.S.B),
+                    0x79 => bit_r(gb, 7, &gb.cpu.BC.S.C),
+                    0x7A => bit_r(gb, 7, &gb.cpu.DE.S.D),
+                    0x7B => bit_r(gb, 7, &gb.cpu.DE.S.E),
+                    0x7C => bit_r(gb, 7, &gb.cpu.HL.S.H),
+                    0x7D => bit_r(gb, 7, &gb.cpu.HL.S.L),
+                    0x7E => bit_hl(gb, 7),
+                    0x7F => bit_r(gb, 7, &gb.cpu.AF.S.A),
+
+                    0x81 => res_r(gb, 0, &gb.cpu.BC.S.B),
+                    0x82 => res_r(gb, 0, &gb.cpu.BC.S.C),
+                    0x83 => res_r(gb, 0, &gb.cpu.DE.S.D),
+                    0x84 => res_r(gb, 0, &gb.cpu.DE.S.E),
+                    0x85 => res_r(gb, 0, &gb.cpu.HL.S.H),
+                    0x86 => res_r(gb, 0, &gb.cpu.HL.S.L),
+                    0x87 => res_hl(gb, 0),
+                    0x88 => res_r(gb, 1, &gb.cpu.AF.S.A),
+                    0x89 => res_r(gb, 1, &gb.cpu.BC.S.B),
+                    0x80 => res_r(gb, 1, &gb.cpu.BC.S.C),
+                    0x8A => res_r(gb, 1, &gb.cpu.DE.S.D),
+                    0x8B => res_r(gb, 1, &gb.cpu.DE.S.E),
+                    0x8C => res_r(gb, 1, &gb.cpu.HL.S.H),
+                    0x8D => res_r(gb, 1, &gb.cpu.HL.S.L),
+                    0x8E => res_hl(gb, 1),
+                    0x8F => res_r(gb, 1, &gb.cpu.AF.S.A),
+
+                    0x91 => res_r(gb, 2, &gb.cpu.BC.S.B),
+                    0x92 => res_r(gb, 2, &gb.cpu.BC.S.C),
+                    0x93 => res_r(gb, 2, &gb.cpu.DE.S.D),
+                    0x94 => res_r(gb, 2, &gb.cpu.DE.S.E),
+                    0x95 => res_r(gb, 2, &gb.cpu.HL.S.H),
+                    0x96 => res_r(gb, 2, &gb.cpu.HL.S.L),
+                    0x97 => res_hl(gb, 2),
+                    0x98 => res_r(gb, 2, &gb.cpu.AF.S.A),
+                    0x99 => res_r(gb, 3, &gb.cpu.BC.S.B),
+                    0x90 => res_r(gb, 3, &gb.cpu.BC.S.C),
+                    0x9A => res_r(gb, 3, &gb.cpu.DE.S.D),
+                    0x9B => res_r(gb, 3, &gb.cpu.DE.S.E),
+                    0x9C => res_r(gb, 3, &gb.cpu.HL.S.H),
+                    0x9D => res_r(gb, 3, &gb.cpu.HL.S.L),
+                    0x9E => res_hl(gb, 3),
+                    0x9F => res_r(gb, 3, &gb.cpu.AF.S.A),
+
+                    0xA1 => res_r(gb, 4, &gb.cpu.BC.S.B),
+                    0xA2 => res_r(gb, 4, &gb.cpu.BC.S.C),
+                    0xA3 => res_r(gb, 4, &gb.cpu.DE.S.D),
+                    0xA4 => res_r(gb, 4, &gb.cpu.DE.S.E),
+                    0xA5 => res_r(gb, 4, &gb.cpu.HL.S.H),
+                    0xA6 => res_r(gb, 4, &gb.cpu.HL.S.L),
+                    0xA7 => res_hl(gb, 4),
+                    0xA8 => res_r(gb, 4, &gb.cpu.AF.S.A),
+                    0xA9 => res_r(gb, 5, &gb.cpu.BC.S.B),
+                    0xA0 => res_r(gb, 5, &gb.cpu.BC.S.C),
+                    0xAA => res_r(gb, 5, &gb.cpu.DE.S.D),
+                    0xAB => res_r(gb, 5, &gb.cpu.DE.S.E),
+                    0xAC => res_r(gb, 5, &gb.cpu.HL.S.H),
+                    0xAD => res_r(gb, 5, &gb.cpu.HL.S.L),
+                    0xAE => res_hl(gb, 5),
+                    0xAF => res_r(gb, 5, &gb.cpu.AF.S.A),
+
+                    0xB2 => res_r(gb, 6, &gb.cpu.BC.S.B),
+                    0xB3 => res_r(gb, 6, &gb.cpu.BC.S.C),
+                    0xB4 => res_r(gb, 6, &gb.cpu.DE.S.D),
+                    0xB5 => res_r(gb, 6, &gb.cpu.DE.S.E),
+                    0xB6 => res_r(gb, 6, &gb.cpu.HL.S.H),
+                    0xB7 => res_r(gb, 6, &gb.cpu.HL.S.L),
+                    0xB8 => res_hl(gb, 6),
+                    0xB9 => res_r(gb, 6, &gb.cpu.AF.S.A),
+                    0xB0 => res_r(gb, 7, &gb.cpu.BC.S.B),
+                    0xB1 => res_r(gb, 7, &gb.cpu.BC.S.C),
+                    0xBA => res_r(gb, 7, &gb.cpu.DE.S.D),
+                    0xBB => res_r(gb, 7, &gb.cpu.DE.S.E),
+                    0xBC => res_r(gb, 7, &gb.cpu.HL.S.H),
+                    0xBD => res_r(gb, 7, &gb.cpu.HL.S.L),
+                    0xBE => res_hl(gb, 7),
+                    0xBF => res_r(gb, 7, &gb.cpu.AF.S.A),
+
+                    0xC2 => set_r(gb, 0, &gb.cpu.BC.S.B),
+                    0xC3 => set_r(gb, 0, &gb.cpu.BC.S.C),
+                    0xC4 => set_r(gb, 0, &gb.cpu.DE.S.D),
+                    0xC5 => set_r(gb, 0, &gb.cpu.DE.S.E),
+                    0xC6 => set_r(gb, 0, &gb.cpu.HL.S.H),
+                    0xC7 => set_r(gb, 0, &gb.cpu.HL.S.L),
+                    0xC8 => set_hl(gb, 0),
+                    0xC9 => set_r(gb, 1, &gb.cpu.AF.S.A),
+                    0xC0 => set_r(gb, 1, &gb.cpu.BC.S.B),
+                    0xC1 => set_r(gb, 1, &gb.cpu.BC.S.C),
+                    0xCA => set_r(gb, 1, &gb.cpu.DE.S.D),
+                    0xCB => set_r(gb, 1, &gb.cpu.DE.S.E),
+                    0xCC => set_r(gb, 1, &gb.cpu.HL.S.H),
+                    0xCD => set_r(gb, 1, &gb.cpu.HL.S.L),
+                    0xCE => set_hl(gb, 1),
+                    0xCF => set_r(gb, 1, &gb.cpu.AF.S.A),
+
+                    0xD2 => set_r(gb, 2, &gb.cpu.BC.S.B),
+                    0xD3 => set_r(gb, 2, &gb.cpu.BC.S.C),
+                    0xD4 => set_r(gb, 2, &gb.cpu.DE.S.D),
+                    0xD5 => set_r(gb, 2, &gb.cpu.DE.S.E),
+                    0xD6 => set_r(gb, 2, &gb.cpu.HL.S.H),
+                    0xD7 => set_r(gb, 2, &gb.cpu.HL.S.L),
+                    0xD8 => set_hl(gb, 2),
+                    0xD9 => set_r(gb, 2, &gb.cpu.AF.S.A),
+                    0xD0 => set_r(gb, 3, &gb.cpu.BC.S.B),
+                    0xD1 => set_r(gb, 3, &gb.cpu.BC.S.C),
+                    0xDA => set_r(gb, 3, &gb.cpu.DE.S.D),
+                    0xDB => set_r(gb, 3, &gb.cpu.DE.S.E),
+                    0xDC => set_r(gb, 3, &gb.cpu.HL.S.H),
+                    0xDD => set_r(gb, 3, &gb.cpu.HL.S.L),
+                    0xDE => set_hl(gb, 3),
+                    0xDF => set_r(gb, 3, &gb.cpu.AF.S.A),
+
+                    0xE2 => set_r(gb, 4, &gb.cpu.BC.S.B),
+                    0xE3 => set_r(gb, 4, &gb.cpu.BC.S.C),
+                    0xE4 => set_r(gb, 4, &gb.cpu.DE.S.D),
+                    0xE5 => set_r(gb, 4, &gb.cpu.DE.S.E),
+                    0xE6 => set_r(gb, 4, &gb.cpu.HL.S.H),
+                    0xE7 => set_r(gb, 4, &gb.cpu.HL.S.L),
+                    0xE8 => set_hl(gb, 4),
+                    0xE9 => set_r(gb, 4, &gb.cpu.AF.S.A),
+                    0xE0 => set_r(gb, 5, &gb.cpu.BC.S.B),
+                    0xE1 => set_r(gb, 5, &gb.cpu.BC.S.C),
+                    0xEA => set_r(gb, 5, &gb.cpu.DE.S.D),
+                    0xEB => set_r(gb, 5, &gb.cpu.DE.S.E),
+                    0xEC => set_r(gb, 5, &gb.cpu.HL.S.H),
+                    0xED => set_r(gb, 5, &gb.cpu.HL.S.L),
+                    0xEE => set_hl(gb, 5),
+                    0xEF => set_r(gb, 5, &gb.cpu.AF.S.A),
+
+                    0xF3 => set_r(gb, 6, &gb.cpu.BC.S.B),
+                    0xF4 => set_r(gb, 6, &gb.cpu.BC.S.C),
+                    0xF5 => set_r(gb, 6, &gb.cpu.DE.S.D),
+                    0xF6 => set_r(gb, 6, &gb.cpu.DE.S.E),
+                    0xF7 => set_r(gb, 6, &gb.cpu.HL.S.H),
+                    0xF8 => set_r(gb, 6, &gb.cpu.HL.S.L),
+                    0xF9 => set_hl(gb, 6),
+                    0xF0 => set_r(gb, 6, &gb.cpu.AF.S.A),
+                    0xF1 => set_r(gb, 7, &gb.cpu.BC.S.B),
+                    0xF2 => set_r(gb, 7, &gb.cpu.BC.S.C),
+                    0xFA => set_r(gb, 7, &gb.cpu.DE.S.D),
+                    0xFB => set_r(gb, 7, &gb.cpu.DE.S.E),
+                    0xFC => set_r(gb, 7, &gb.cpu.HL.S.H),
+                    0xFD => set_r(gb, 7, &gb.cpu.HL.S.L),
+                    0xFE => set_hl(gb, 7),
+                    0xFF => set_r(gb, 7, &gb.cpu.AF.S.A),
+
+                    // else => cblk: {
+                    //     gb.halt = true;
+                    //     std.log.info("Unimplemented CB Instruction 0x{X}", .{gb.memory.read8(gb.cpu.PC)});
+                    //     // std.log.info("Flags={B:0>1}", .{gb.cpu.AF.S.F});
+                    //     break :cblk return RuntimeError.InstructionNotImplemented;
+                    // },
                 }
             },
             // CALL Z,a16

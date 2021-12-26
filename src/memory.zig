@@ -1,7 +1,7 @@
 const std = @import("std");
 pub const Memory = struct {
     Bootrom: [256]u8,
-    ROM: [0x3FFF]u8,
+    ROM: [0xFFFFF]u8,
     VRAM: [0x8000]u8,
     ERAM: [0x8000]u8,
     WRAM: [0x4000]u8,
@@ -13,10 +13,12 @@ pub const Memory = struct {
     interruptsEnabled: bool,
     inBootrom: bool,
 
+    scy: u8,
+
     pub fn init() Memory {
         return Memory{
             .Bootrom = [_]u8{0} ** 0x100,
-            .ROM = [_]u8{0} ** 0x3FFF,
+            .ROM = [_]u8{0} ** 0xFFFFF,
             .VRAM = [_]u8{0} ** 0x8000,
             .ERAM = [_]u8{0} ** 0x8000,
             .WRAM = [_]u8{0} ** 0x4000,
@@ -25,14 +27,22 @@ pub const Memory = struct {
             .inBootrom = true,
             .interruptsEnabled = false,
             .romSize = 0,
+            .scy = 0,
         };
     }
 
     pub fn read8(mem: *Memory, address: u16) u8 {
         // std.log.info("\tread8 ${x:0>4}", .{address});
+        // if(address == 0x0104)
+        //     return 0xCE;
+
         if (address <= 0x3FFF) {
-            if (address <= 0x100 and mem.inBootrom) {
-                return mem.Bootrom[address];
+            if (address < 0x0100) {
+                if (mem.inBootrom) {
+                    return mem.Bootrom[address];
+                } else {
+                    return mem.ROM[address];
+                }
             } else {
                 return mem.ROM[address];
             }
@@ -54,7 +64,13 @@ pub const Memory = struct {
         } else if (address <= 0xFF7F) {
             // std.log.info("\tRead IO register ${x:0>4}", .{address});
             // std.os.exit(1);
-            return 0x90;
+            if (address == 0xff44) {
+                return 0x90;
+            } else if (address == 0xff42) {
+                return mem.scy;
+            } else {
+                return 0x0;
+            }
         } else if (address <= 0xFFFE) {
             return mem.HRAM[0xFFFF - address];
         } else if (address == 0xFFFF) {
@@ -73,7 +89,16 @@ pub const Memory = struct {
     pub fn write8(mem: *Memory, address: u16, value: u8) void {
         // std.log.info("\t write8 ${x:0>4}=${x:0>2}", .{address, value});
         if (address == 0xFF01) {
-            std.log.info("{c}", .{value});
+            const out = std.io.getStdErr();
+            var buf = std.io.bufferedWriter(out.writer());
+            // Get the Writer interface from BufferedWriter
+            var w = buf.writer();
+            w.writeByte(value) catch return;
+            buf.flush() catch return;
+
+            // const writer = std.io.getStdOut().writer();
+            // writer.writeByte(value) catch return;
+            // writer.flush();
             // std.io.bufferedWriter(stdout)
             // const stdout = std.io.getStdOut().writer();
             // const array = [1]u8{value};
@@ -107,10 +132,11 @@ pub const Memory = struct {
         } else if (address >= 0xFF00 and address <= 0xFF7F) {
             if (address == 0xFF50) {
                 mem.inBootrom = false;
-            } else if (address == 0xFF42) {
-                // fix this later
+            }
+            if (address == 0xff42) {
+                mem.scy = value;
             } else {
-                std.log.info("Unknown IO register write ${x:0>4} ${x:0>2}", .{ address, value });
+                // std.log.info("Unknown IO register write ${x:0>4} ${x:0>2}", .{ address, value });
             }
         } else if (address <= 0xFFFE) {
             mem.HRAM[0xFFFF - address] = value;
