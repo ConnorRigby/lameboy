@@ -1,2 +1,5 @@
 zig-*
 /gb-test-roms*
+gyro-*
+deps.zig
+.gyro/

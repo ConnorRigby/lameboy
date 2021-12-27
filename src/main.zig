@@ -1,26 +1,12 @@
 const std = @import("std");
-const glfw = @import("zglfw.zig");
+const SDL = @cImport({
+    @cInclude("SDL.h");
+});
 
 const Core = @import("core.zig").Core;
 const disassembler = @import("disassembler.zig");
 
 pub fn main() anyerror!void {
-    // std.log.info("{b:0>8} {b:0>8}", .{ @as(u8, 0x0), @as(u8, 0x10) });
-
-    var major: i32 = 0;
-    var minor: i32 = 0;
-    var rev: i32 = 0;
-
-    glfw.getVersion(&major, &minor, &rev);
-    std.log.info("GLFW {}.{}.{}\n", .{ major, minor, rev });
-    //Example of something that fails with GLFW_NOT_INITIALIZED - but will continue with execution
-    //var monitor : ?*glfw.Monitor = glfw.getPrimaryMonitor();
-
-    try glfw.init();
-    defer glfw.terminate();
-    std.log.info("GLFW Init Succeeded.\n", .{});
-
-
     var core = Core.init();
     _ = try core.startDebugger();
 
@@ -42,7 +28,8 @@ pub fn main() anyerror!void {
         // "gb-test-roms-master/cpu_instrs/individual/08-misc instrs.gb",
         // "gb-test-roms-master/cpu_instrs/individual/09-op r,r.gb",
         // "gb-test-roms-master/cpu_instrs/individual/11-op a,(hl).gb",
-        "gb-test-roms-master/cpu_instrs/cpu_instrs.gb",
+        // "gb-test-roms-master/cpu_instrs/cpu_instrs.gb",
+        "dmg-acid2.gb",
         .{ .read = true },
     );
     defer testrom.close();
@@ -51,20 +38,27 @@ pub fn main() anyerror!void {
     // std.log.info("rom size ${x:0>4}", .{size});
     core.memory.romSize = size;
 
-    glfw.windowHint(glfw.WindowHint.Floating, 1);
-    glfw.windowHint(glfw.WindowHint.Decorated, 1);
-    glfw.windowHint(glfw.WindowHint.Resizable, 0);
-    // glfw.windowHint(glfw.WindowHint.TransparentFramebuffer, 0);
-    var window: *glfw.Window = try glfw.createWindow(160, 144, "gaemboy", null, null);
-    glfw.makeContextCurrent(window);
+    _ = SDL.SDL_Init(SDL.SDL_INIT_VIDEO);
+    defer SDL.SDL_Quit();
 
-    while (core.halt != true and !glfw.windowShouldClose(window)) {
-        if (glfw.getKey(window, glfw.Key.Escape) == glfw.KeyState.Press) {
-            glfw.setWindowShouldClose(window, true);
-            core.halt = true;
+    var window = SDL.SDL_CreateWindow("gaemboy", SDL.SDL_WINDOWPOS_CENTERED, SDL.SDL_WINDOWPOS_CENTERED, 160, 144, 0);
+    defer SDL.SDL_DestroyWindow(window);
+
+    var renderer = SDL.SDL_CreateRenderer(window, 0, SDL.SDL_RENDERER_PRESENTVSYNC);
+    defer SDL.SDL_DestroyRenderer(renderer);
+
+    while (core.halt != true) {
+        var sdl_event: SDL.SDL_Event = undefined;
+        while (SDL.SDL_PollEvent(&sdl_event) != 0) {
+            switch (sdl_event.type) {
+                SDL.SDL_QUIT => core.halt = true,
+                else => {},
+            }
         }
-        glfw.swapBuffers(window);
-        glfw.pollEvents();
+
+        _ = SDL.SDL_SetRenderDrawColor(renderer, 0xFE, 0xFE, 0xFE, 0xFF);
+        _ = SDL.SDL_RenderClear(renderer);
+        SDL.SDL_RenderPresent(renderer);
 
         if (core.step()) |_| {
             core.debugger.step();
@@ -77,4 +71,7 @@ pub fn main() anyerror!void {
             },
         }
     }
+    SDL.SDL_DestroyWindow(window);
+    SDL.SDL_DestroyRenderer(renderer);
+    SDL.SDL_Quit();
 }

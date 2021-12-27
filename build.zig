@@ -11,20 +11,15 @@ pub fn build(b: *std.build.Builder) void {
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall.
     const mode = b.standardReleaseOptions();
 
-    const glfw = b.addStaticLibrary("zglfw", "src/zglfw.zig");
-
-    // // tested only on linux!!
-    // lib.linkSystemLibrary("c");
-    // lib.install();
-
     const exe = b.addExecutable("gb", "src/main.zig");
-    exe.linkSystemLibrary("glfw3");
 
     exe.setTarget(target);
     exe.setBuildMode(mode);
     exe.linkLibC();
+    exe.addIncludeDir("/usr/local/include/SDL2");
+    exe.addLibPath("/usr/local/lib");
+    exe.linkSystemLibrary("sdl2");
     exe.addIncludeDir("lua-5.3.4/src");
-    glfw.install();
 
     const lua_c_files = [_][]const u8{
         "lapi.c",
