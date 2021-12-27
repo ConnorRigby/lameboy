@@ -1,5 +1,9 @@
 zig-*
 /gb-test-roms*
+SDL2-*
 gyro-*
 deps.zig
 .gyro/
+*.zip
+*.gb
+*.txt
