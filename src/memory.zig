@@ -47,6 +47,7 @@ pub const Memory = struct {
                 return mem.ROM[address];
             }
         } else if (address <= 0x7FFF) {
+            // std.log.info("read {x:0>4} {x:0>2}", .{address, mem.ROM[address]});
             return mem.ROM[address];
         } else if (address <= 0x9FFF) {
             return mem.VRAM[0xA000 - address];

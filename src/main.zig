@@ -17,7 +17,14 @@ pub fn main() anyerror!void {
     _ = try bootrom.readAll(&core.memory.Bootrom);
 
     const testrom = try std.fs.cwd().openFile(
-        "gb-test-roms-master/cpu_instrs/cpu_instrs.gb",
+        // "gb-test-roms-master/cpu_instrs/individual/01-special.gb",
+        // "gb-test-roms-master/cpu_instrs/individual/03-op sp,hl.gb",
+        // "gb-test-roms-master/cpu_instrs/individual/04-op r,imm.gb",
+        // "gb-test-roms-master/cpu_instrs/individual/05-op rp.gb",
+        // "gb-test-roms-master/cpu_instrs/individual/06-ld r,r.gb",
+        // "gb-test-roms-master/cpu_instrs/individual/07-jr,jp,call,ret,rst.gb",
+        // "gb-test-roms-master/cpu_instrs/individual/08-misc instrs.gb",
+        "gb-test-roms-master/cpu_instrs/individual/09-op r,r.gb",
         .{ .read = true },
     );
     defer testrom.close();
