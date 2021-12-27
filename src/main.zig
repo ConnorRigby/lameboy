@@ -24,7 +24,9 @@ pub fn main() anyerror!void {
         // "gb-test-roms-master/cpu_instrs/individual/06-ld r,r.gb",
         // "gb-test-roms-master/cpu_instrs/individual/07-jr,jp,call,ret,rst.gb",
         // "gb-test-roms-master/cpu_instrs/individual/08-misc instrs.gb",
-        "gb-test-roms-master/cpu_instrs/individual/09-op r,r.gb",
+        // "gb-test-roms-master/cpu_instrs/individual/09-op r,r.gb",
+        // "gb-test-roms-master/cpu_instrs/individual/11-op a,(hl).gb",
+        "gb-test-roms-master/cpu_instrs/cpu_instrs.gb",
         .{ .read = true },
     );
     defer testrom.close();

@@ -465,4 +465,5 @@ end
 # Compare.run("out.txt", "Blargg4.txt")
 # Compare.run("out.txt", "Blargg6.txt")
 # Compare.run("out.txt", "Blargg7.txt")
-Compare.run("out.txt", "Blargg9.txt")
+# Compare.run("output.txt", "Blargg9.txt")
+Compare.run("output.txt", "Blargg11.txt")
