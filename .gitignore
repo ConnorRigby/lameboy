@@ -7,3 +7,6 @@ deps.zig
 *.zip
 *.gb
 *.txt
+cimgui
+imgui_lua_bindings
+zgt

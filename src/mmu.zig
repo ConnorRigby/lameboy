@@ -1,5 +1,5 @@
 const std = @import("std");
-pub const Memory = struct {
+pub const MMU = struct {
     Bootrom: [256]u8,
     ROM: [0xFFFFF]u8,
     VRAM: [0x8000]u8,
@@ -15,8 +15,8 @@ pub const Memory = struct {
 
     scy: u8,
 
-    pub fn init() Memory {
-        return Memory{
+    pub fn init() MMU {
+        return MMU{
             .Bootrom = [_]u8{0} ** 0x100,
             .ROM = [_]u8{0} ** 0xFFFFF,
             .VRAM = [_]u8{0} ** 0x8000,
@@ -31,7 +31,7 @@ pub const Memory = struct {
         };
     }
 
-    pub fn read8(mem: *Memory, address: u16) u8 {
+    pub fn read8(mem: *MMU, address: u16) u8 {
         // std.log.info("\tread8 ${x:0>4}", .{address});
         // if(address == 0x0104)
         //     return 0xCE;
@@ -83,11 +83,11 @@ pub const Memory = struct {
         }
     }
 
-    pub fn readi8(mem: *Memory, address: u16) i8 {
+    pub fn readi8(mem: *MMU, address: u16) i8 {
         return @bitCast(i8, mem.read8(address));
     }
 
-    pub fn write8(mem: *Memory, address: u16, value: u8) void {
+    pub fn write8(mem: *MMU, address: u16, value: u8) void {
         // std.log.info("\t write8 ${x:0>4}=${x:0>2}", .{address, value});
         if (address == 0xFF01) {
             const out = std.io.getStdErr();

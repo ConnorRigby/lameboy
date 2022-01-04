@@ -114,7 +114,7 @@ export fn lua_read8(L: ?*lua.lua_State) c_int {
     _ = lua.lua_getfield(L, -1, "__core__");
     var voidp = lua.lua_touserdata(L, -1);
     var core = @ptrCast(*Core, @alignCast(@alignOf(*Core), voidp));
-    lua.lua_pushinteger(L, core.memory.read8(@intCast(u16, value)));
+    lua.lua_pushinteger(L, core.mmu.read8(@intCast(u16, value)));
     return 1;
 }
 
@@ -142,7 +142,7 @@ export fn lua_write8(L: ?*lua.lua_State) c_int {
     _ = lua.lua_getfield(L, -1, "__core__");
     var voidp = lua.lua_touserdata(L, -1);
     var core = @ptrCast(*Core, @alignCast(@alignOf(*Core), voidp));
-    core.memory.write8(@intCast(u16, address), @intCast(u8, value));
+    core.mmu.write8(@intCast(u16, address), @intCast(u8, value));
     return 0;
 }
 
