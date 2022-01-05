@@ -17,6 +17,6 @@ const OpcodeLookupTable: []const []const u8 = &.{
     "LDH A,(a8)", "POP AF",    "LD A,(C)",   "DI",        "INV",         "PUSH AF",   "OR d8",      "RST 30H",   "LD HL,SP+r8", "LD SP,HL",  "LD A,(a16)", "EI",        "INV",        "INV",      "CP d8",      "RST 38H",
 };
 
-pub fn disassemble(opcode: u8) []const u8 {
+pub fn disassembleOP(opcode: u8) []const u8 {
     return OpcodeLookupTable[opcode];
 }

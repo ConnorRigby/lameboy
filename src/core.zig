@@ -23,7 +23,7 @@ pub const Core = struct {
             .cpu = CPU.init(),
             .mmu = MMU.init(),
             .ppu = PPU.init(),
-            .debugger = Debugger.init(),
+            .debugger = Debugger.init(std.heap.c_allocator),
         };
     }
 
@@ -35,6 +35,10 @@ pub const Core = struct {
         try core.cpu.tick(&core.mmu);
         try core.ppu.tick(&core.mmu);
         core.debugger.step();
+        if (core.cpu.PC == 256) {
+            std.log.info("break", .{});
+            try core.debugger.dissassemble(core);
+            return cpu.RuntimeError.YouSuck;
+        }
     }
-
 };

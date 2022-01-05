@@ -40,7 +40,6 @@ pub fn main() anyerror!void {
     // std.log.info("rom size ${x:0>4}", .{size});
     core.mmu.romSize = size;
 
-
     _ = SDL.SDL_Init(SDL.SDL_INIT_VIDEO);
     defer SDL.SDL_Quit();
 
@@ -62,7 +61,6 @@ pub fn main() anyerror!void {
 
     var renderer = SDL.SDL_CreateRenderer(window, 0, SDL.SDL_RENDERER_PRESENTVSYNC);
     defer SDL.SDL_DestroyRenderer(renderer);
-
 
     _ = SDL.SDL_SetRenderDrawColor(renderer, 0xFE, 0xFE, 0xFE, 0xFF);
     _ = SDL.SDL_RenderClear(renderer);

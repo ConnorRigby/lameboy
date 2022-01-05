@@ -1,4 +1,7 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+const ArrayList = std.ArrayList;
+
 const Core = @import("core.zig").Core;
 const RegisterID = @import("cpu.zig").RegisterID;
 
@@ -148,14 +151,19 @@ export fn lua_write8(L: ?*lua.lua_State) c_int {
 
 pub const Debugger = struct {
     L: ?*lua.lua_State,
+    DisassemblerBuffer: ArrayList(u8),
 
-    pub fn init() Debugger {
+    pub fn init(allocator: Allocator) Debugger {
         var L = lua.luaL_newstate();
         lua.luaL_openlibs(L);
-        return Debugger{
-            .L = L,
-        };
+
+        var buffer = ArrayList(u8).init(allocator);
+        defer buffer.deinit();
+
+        return Debugger{ .L = L, .DisassemblerBuffer = buffer };
     }
+
+    pub fn dissassemble(_: *Debugger, _: *Core) !void {}
 
     pub fn step(debugger: *Debugger) void {
         _ = lua.lua_getglobal(debugger.L, "Core");

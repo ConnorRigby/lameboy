@@ -1486,13 +1486,13 @@ pub const CPU = struct {
     pub fn tick(cpu: *CPU, mmu: *MMU) !void {
         const opcode: u8 = mmu.read8(cpu.PC);
 
-        const writer = std.io.getStdOut().writer();
-        // if (cpu.PC >= 0x0100) {
-            writer.print("A: {X:0>2} F: {X:0>2} B: {X:0>2} C: {X:0>2} D: {X:0>2} E: {X:0>2} H: {X:0>2} L: {X:0>2} SP: {X:0>4} PC: 00:{X:0>4} ({X:0>2} {X:0>2} {X:0>2} {X:0>2})\n", .{
-                cpu.AF.S.A,              @bitCast(u8, (cpu.AF.S.F)),  cpu.BC.S.B,                  cpu.BC.S.C,                  cpu.DE.S.D, cpu.DE.S.E, cpu.HL.S.H, cpu.HL.S.L, cpu.SP, cpu.PC,
-                mmu.read8(cpu.PC), mmu.read8(cpu.PC + 1), mmu.read8(cpu.PC + 2), mmu.read8(cpu.PC + 3),
-            }) catch return;
-        // }
+        // const writer = std.io.getStdOut().writer();
+        // // if (cpu.PC >= 0x0100) {
+        //     writer.print("A: {X:0>2} F: {X:0>2} B: {X:0>2} C: {X:0>2} D: {X:0>2} E: {X:0>2} H: {X:0>2} L: {X:0>2} SP: {X:0>4} PC: 00:{X:0>4} ({X:0>2} {X:0>2} {X:0>2} {X:0>2})\n", .{
+        //         cpu.AF.S.A,              @bitCast(u8, (cpu.AF.S.F)),  cpu.BC.S.B,                  cpu.BC.S.C,                  cpu.DE.S.D, cpu.DE.S.E, cpu.HL.S.H, cpu.HL.S.L, cpu.SP, cpu.PC,
+        //         mmu.read8(cpu.PC), mmu.read8(cpu.PC + 1), mmu.read8(cpu.PC + 2), mmu.read8(cpu.PC + 3),
+        //     }) catch return;
+        // // }
 
         switch (opcode) {
             // NOP
@@ -2272,5 +2272,4 @@ pub const CPU = struct {
             },
         }
     }
-
 };

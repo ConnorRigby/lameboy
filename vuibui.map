@@ -1,0 +1,2048 @@
+ROM0 bank #0:
+  SECTION: $0000 (0 bytes) ["Null"]
+           $0000 = null
+  SECTION: $0000-$0002 ($0003 bytes) ["Null Handler"]
+  SECTION: $0003-$0004 ($0002 bytes) ["Call DE"]
+           $0003 = CallDE
+  SECTION: $0008-$0008 ($0001 byte) ["Call HL"]
+           $0008 = CallHL
+  SECTION: $0009-$000e ($0006 bytes) ["Poppy Definition"]
+           $0009 = PlayerPoppy
+  SECTION: $0010-$0016 ($0007 bytes) ["Memory Copy Small"]
+           $0010 = MemCopySmall
+  SECTION: $0018-$001c ($0005 bytes) ["Memset Small"]
+           $0018 = MemSetSmall
+  SECTION: $0020-$0025 ($0006 bytes) ["Swap Bank"]
+           $0020 = SwapBank
+  SECTION: $0028-$0030 ($0009 bytes) ["Far Call"]
+           $0028 = FarCall
+  SECTION: $0031-$003e ($000e bytes) ["Memory Copy Far"]
+           $0031 = MemCopyFar
+           $0036 = MemCopyFar.copy
+  SECTION: $0038 (0 bytes) ["Crash Handler"]
+           $0038 = CrashHandler
+  SECTION: $0040-$0046 ($0007 bytes) ["VBlank Interrupt"]
+  SECTION: $0048-$004d ($0006 bytes) ["Stat Interrupt"]
+  SECTION: $004e-$00cd ($0080 bytes) ["pitch_table"]
+           $004e = pitch_table
+  SECTION: $00ce-$00fb ($002e bytes) ["One Bit Per Pixel"]
+           $00ce = Unpack1bpp
+           $00d7 = Unpack1bppBanked
+           $00e2 = Complement1bpp
+           $00ec = LCDComplement1bpp
+  SECTION: $0100-$014f ($0050 bytes) ["Header"]
+  SECTION: $0150-$068c ($053d bytes) ["Inventory"]
+           $0150 = InventoryHeader
+           $016f = InventoryInit
+           $0174 = InventoryInit.waitFade
+           $017c = InventoryInit.waitVBlank
+           $01e1 = InventoryInit.poppyItems
+           $01e6 = InventoryInit.octaviaItems
+           $01e9 = InventoryInit.loadItems
+           $021d = InventoryInit.cgbSkip
+           $0293 = !0
+           $0298 = !1
+           $029b = !2
+           $02bf = InventoryInit.skipColorOffset
+           $02ff = InventoryInit.cgbPanSkip
+           $0322 = InventoryInit.item1
+           $0335 = InventoryInit.item2
+           $0348 = InventoryInit.item3
+           $035b = InventoryInit.exit
+           $0362 = InventoryRedraw
+           $0385 = InventoryRedraw.cleanAttributesLoop
+           $03ae = !3
+           $03bf = !4
+           $03cc = InventoryRedraw.cgbSkip
+           $03f4 = InventoryRedraw.directionIncrement
+           $0402 = !5
+           $0404 = InventoryRedraw.storeDirection
+           $0407 = InventoryRedraw.renderDoll
+           $0451 = InventoryRedraw.options
+           $046f = InventoryRedraw.metaspriteLookup
+           $0478 = InventoryClose
+           $0486 = InventoryClose.waitFade
+           $04b1 = MoveRight
+           $04c6 = MoveLeft
+           $04d8 = MoveUp
+           $04ea = MoveDown
+           $0516 = MoveDown.skipItems
+           $0520 = HandleAPress
+           $054e = HandleAPress.notInA
+           $055a = HandleAPress.notInB
+           $055f = HandleAPress.exit
+           $0578 = HandleAPress.gotItem
+           $057d = HandleAPress.save
+           $0587 = HandleAPress.saveAndExit
+           $0598 = HandleAPress.waitFade
+           $05a2 = HandleBPress
+           $05c3 = HandleBPress.notInA
+           $05d1 = HandleBPress.notInB
+           $05d8 = HandleBPress.exit
+           $05f3 = HandleBPress.gotItem
+           $05f8 = HandleStartPress
+           $05fe = DrawEquipped
+           $0603 = !6
+           $0603 = DrawEquipped.cleanLoop
+           $0614 = !7
+           $0644 = !8
+           $0656 = !9
+           $065f = DrawEquipped.drawB
+           $0670 = !10
+           $0683 = !11
+  SECTION: $068d-$0a8a ($03fe bytes) ["Player Functions"]
+           $068d = HandlePlayers
+           $068d = HandlePlayers.checkOctavia
+           $06ab = HandlePlayers.checkPoppy
+           $06c1 = HandlePlayers.poppyArrow0
+           $06ce = HandlePlayers.poppyArrow1
+           $06db = HandlePlayers.checkTiber
+           $06e7 = RenderPlayers
+           $06e7 = RenderPlayers.octavia
+           $0700 = RenderPlayers.poppy
+           $070d = RenderPlayers.poppyArrow0
+           $0715 = RenderPlayers.poppyArrow1
+           $071d = RenderPlayers.tiber
+           $0729 = RenderPlayersTransition.octavia
+           $0729 = RenderPlayersTransition
+           $0734 = RenderPlayersTransition.poppy
+           $073f = RenderPlayersTransition.tiber
+           $074b = CyclePlayers
+           $0756 = CyclePlayers.zSkip
+           $076b = CyclePlayers.waitLoop
+           $0773 = CyclePlayers.skipSet
+           $0778 = PlayerActivityCheck.waiting
+           $0778 = PlayerActivityCheck
+           $0786 = PlayerActivityCheck.disabled
+           $0792 = PlayerActivityCheck.room
+           $07a5 = UseItemCheck
+           $07a5 = UseItemCheck.aCheck
+           $07b1 = UseItemCheck.bCheck
+           $07bc = UseItemCheck.loadItemState
+           $07c4 = NPCInteractionCheck
+           $07fb = PlayerInteractionCheck
+           $081c = GetEntityTargetPosition
+           $0830 = GetEntityTargetPosition.left
+           $0834 = GetEntityTargetPosition.right
+           $0836 = GetEntityTargetPosition.storeX
+           $083b = GetEntityTargetPosition.down
+           $083f = GetEntityTargetPosition.up
+           $0841 = GetEntityTargetPosition.storeY
+           $0846 = PlayerTransitionMovement
+           $0863 = PlayerTransitionMovement.down
+           $086b = PlayerTransitionMovement.up
+           $0873 = PlayerTransitionMovement.right
+           $087b = PlayerTransitionMovement.left
+           $0881 = PlayerTransitionMovement.animatePlayerX
+           $0882 = PlayerTransitionMovement.animatePlayerY
+           $088a = !0
+           $088f = PlayerTransitionMovement.updateAllyPositions
+           $08a0 = PlayerTransitionMovement.updateAllyPositionsLoop
+           $08ca = PlayerTransitionMovement.doubleOffset
+           $08cb = PlayerTransitionMovement.skipDouble
+           $091b = !1
+           $091d = PlayerTransitionMovement.updateAllyPositionsDecrement
+           $0925 = PlayerTransitionMovement.positionOffsetTable
+           $092d = ScreenTransitionCheck
+           $0940 = ScreenTransitionCheck.downCheck
+           $0946 = ScreenTransitionCheck.upCheck
+           $094c = ScreenTransitionCheck.rightCheck
+           $0953 = ScreenTransitionCheck.leftCheck
+           $0954 = ScreenTransitionCheck.update
+           $0965 = ScreenTransitionCheck.clearTransBuffer
+           $096a = WarpTileCheck
+           $09b8 = PlayerUpdateMapPosition
+           $09c4 = PlayerUpdateMapPosition.waitLoop
+           $09c6 = PlayerUpdateMapPosition.waitLoopShort
+           $09d7 = PlayerSetWaitLink.octavia
+           $09d7 = PlayerSetWaitLink
+           $09db = PlayerSetWaitLink.poppy
+           $09df = PlayerSetWaitLink.tiber
+           $09e1 = PlayerSetWaitLink.store
+           $09ed = PlayerCameraInterpolation
+           $0a04 = !2
+           $0a10 = !3
+           $0a12 = PlayerCameraInterpolation.x
+           $0a1e = !4
+           $0a2c = CheckPlayerCollision
+           $0a37 = CheckAllyCollision
+           $0a4a = CheckAllyCollision.poppyCheck
+           $0a50 = CheckAllyCollision.poppySkip
+           $0a5d = CheckAllyCollision.tiberCheck
+           $0a64 = CheckAllyCollision.tiberSkip
+           $0a71 = CheckAllyCollision.retNone
+           $0a74 = CheckAllyCollision.retOctavia
+           $0a76 = CheckAllyCollision.retPoppy
+           $0a79 = CheckAllyCollision.retTiber
+           $0a7c = PlayerDialogueLookup
+           $0a82 = PlayerDialogueLookup.octavia
+           $0a85 = PlayerDialogueLookup.poppy
+           $0a88 = PlayerDialogueLookup.tiber
+  SECTION: $0a8b-$0dab ($0321 bytes) ["Map Lookup"]
+           $0a8b = UpdateActiveMap
+           $0a9c = UpdateActiveMap.checkEntities
+           $0abf = UpdateActiveMap.clearDespawn
+           $0ac8 = UpdateActiveMap.endDespawn
+           $0adf = UpdateActiveMap.noDespawn
+           $0b19 = UpdateActiveMap.waitPalFade
+           $0b21 = UpdateActiveMap.waitVBlank
+           $0b2d = UpdateActiveMap.waitSkip
+           $0b85 = UpdateActiveMap.palSkip
+           $0b87 = UpdateActiveMap.palFinish
+           $0bf2 = UpdateActiveMap.skipNewTileMap
+           $0c02 = UpdateActiveMap.skipDoubleLoad
+           $0c06 = UpdateActiveMap.nextData
+           $0c16 = UpdateActiveMap.knownRet
+           $0c17 = UpdateActiveMap.jumpTable
+           $0c29 = MapdataEntity
+           $0c3b = MapdataAllyLogic
+           $0c41 = MapdataSetWarp
+           $0c6b = MapdataNPC
+           $0c95 = MapdataSetRespawn
+           $0cad = MapdataSetDestroyTile
+           $0cb4 = MapdataSpawnItem
+           $0cd8 = MapdataSpawnItem.fail
+           $0cde = MapdataSpawnItem.flagSet
+           $0ce6 = MapdataExecScript
+           $0cf5 = GetActiveMap
+           $0d24 = GetActiveMap.multLoop
+           $0d2d = GetActiveMap.skipY
+           $0d3f = ReloadMapGraphics
+           $0d92 = ReloadMapGraphics.cgbSkip
+           $0d9a = MapLookup
+           $0da3 = PanoramaLookup
+  SECTION: $0dac-$1056 ($02ab bytes) ["Entity Script Handler"]
+           $0dac = HandleEntityScript
+           $0dbb = EntityScriptJumpTable
+           $0de5 = GetMemberArgument
+           $0df7 = GetMemberArgument.field
+           $0dfb = ScriptYield
+           $0dfd = IncrementScriptPointer
+           $0e0e = ScriptJump
+           $0e1c = ScriptSetArray
+           $0e26 = ScriptSetArray.setjump
+           $0e39 = ScriptSetField
+           $0e43 = ScriptSetMemory
+           $0e58 = ScriptKill
+           $0e5e = !0
+           $0e67 = !1
+           $0e6c = ScriptAddArray
+           $0e76 = ScriptAddArray.addjump
+           $0e87 = ScriptAddField
+           $0e91 = ScriptMove
+           $0ea1 = ScriptCheckedMove
+           $0eb7 = ScriptGetMemory
+           $0ed1 = ScriptChasePlayer
+           $0f0d = ScriptAnimate
+           $0f26 = ScriptAnimate.skipframe
+           $0f28 = ScriptAnimate.setframe
+           $0f37 = ScriptInline
+           $0f4a = ScriptFor
+           $0f5b = ScriptFor.field
+           $0f6e = ScriptFor.jump
+           $0f76 = ScriptRandom
+           $0f90 = ScriptRandom.field
+           $0f9c = ScriptAttackPlayer
+           $0fd8 = ScriptAttackPlayer.noField
+           $0fd9 = ScriptAttackPlayer.noPlayer
+           $0fe1 = ScriptIfNegative
+           $0fef = IfJump
+           $1000 = ScriptIfNotZero
+           $100e = ScriptDeathParticles
+           $1027 = ScriptTargetDirection
+           $103a = ScriptTargetDirection.left
+           $103e = ScriptTargetDirection.right
+           $1042 = ScriptTargetDirection.up
+           $1046 = ScriptTargetDirection.down
+           $1048 = ScriptTargetDirection.store
+  SECTION: $1057-$12f9 ($02a3 bytes) ["Tileloader"]
+           $1057 = LoadMetatileMap
+           $105a = LoadMetatileMap.loop
+           $1070 = LoadMapData
+           $1073 = LoadMapData.loop
+           $1087 = LoadMetatile
+           $10ac = DrawMetatile
+           $10af = DrawMetatile.loadRow
+           $10af = !0
+           $10c8 = GetScreenTile
+           $10db = LoadMetatileData
+           $10f7 = ScrollLoader
+           $110f = ScrollLoader.start
+           $1119 = !1
+           $1126 = !2
+           $113a = ScrollLoader.left
+           $1148 = !3
+           $1157 = ScrollLoader.down
+           $1164 = !4
+           $1173 = ScrollLoader.up
+           $1181 = !5
+           $1192 = ScrollLoader.right
+           $119f = !6
+           $11b0 = VBlankScrollLoader
+           $11ea = !7
+           $11ec = VBlankScrollLoader.skipFirst
+           $11ff = VBlankScrollLoader.loadLeft
+           $1204 = VBlankScrollLoader.loadRight
+           $1209 = VBlankScrollLoader.loadUp
+           $120e = VBlankScrollLoader.loadDown
+           $1211 = VBlankScrollLoader.endLoad
+           $1236 = !8
+           $1240 = VBlankScrollLoader.horzontalLoadTile
+           $1242 = VBlankScrollLoader.loadTile
+           $1269 = !9
+           $1287 = VBlankScrollLoader.scrollDown
+           $1294 = VBlankScrollLoader.scrollUp
+           $12a0 = VBlankScrollLoader.storeDown
+           $12a2 = VBlankScrollLoader.storeY
+           $12a5 = VBlankScrollLoader.scrollRight
+           $12b5 = VBlankScrollLoader.scrollLeft
+           $12c4 = VBlankScrollLoader.storeLeft
+           $12c6 = VBlankScrollLoader.storeX
+           $12c9 = ScreenCopy
+           $12cb = ScreenCopy.rowLoop
+           $12e2 = ScreenSet
+           $12e4 = ScreenSet.rowLoop
+  SECTION: $12fa-$154f ($0256 bytes) ["Entity Bank"]
+           $12fa = HandleEntities
+           $1302 = HandleEntities.loop
+           $130d = HandleEntities.skip
+           $1321 = RenderEntities
+           $132c = RenderEntities.loop
+           $1333 = RenderEntities.skip
+           $134e = SpawnEntity
+           $1358 = SpawnEntity.loop
+           $136c = SpawnEntity.break
+           $1372 = PlayerMoveAndSlide.xMovement
+           $1372 = PlayerMoveAndSlide
+           $1384 = PlayerMoveAndSlide.xPos
+           $1388 = PlayerMoveAndSlide.xNeg
+           $138a = PlayerMoveAndSlide.xCheckCollision
+           $139b = PlayerMoveAndSlide.xTopCornerCheck
+           $13b0 = PlayerMoveAndSlide.xBottomCornerCheck
+           $13c1 = PlayerMoveAndSlide.yMovement
+           $13cd = PlayerMoveAndSlide.yPos
+           $13d1 = PlayerMoveAndSlide.yNeg
+           $13d3 = PlayerMoveAndSlide.yCheckCollision
+           $13e2 = PlayerMoveAndSlide.yLeftCornerCheck
+           $13f3 = MoveAndSlide
+           $13f5 = MoveAndSlide.xMovement
+           $1407 = MoveAndSlide.xPos
+           $140b = MoveAndSlide.xNeg
+           $140d = MoveAndSlide.xCheckCollision
+           $1420 = MoveAndSlide.xObstructed
+           $1422 = MoveAndSlide.yMovement
+           $142e = MoveAndSlide.yPos
+           $1432 = MoveAndSlide.yNeg
+           $1434 = MoveAndSlide.yCheckCollision
+           $1445 = MoveAndSlide.yObstructed
+           $1448 = MoveNoClip
+           $1457 = GetEntityDistance
+           $1468 = GetDistanceDirection
+           $146f = !0
+           $1477 = !1
+           $147c = GetDistanceDirection.yDirGreater
+           $1483 = GetDistanceDirection.posYDir
+           $1485 = GetDistanceDirection.xDirGreater
+           $148c = GetDistanceDirection.posXDir
+           $148f = LookupMapData
+           $14ad = CheckEntityCollision
+           $14b7 = !2
+           $14c3 = !3
+           $14ca = CheckEntityCollision.retFail
+           $14ce = DetectEntity
+           $14d4 = DetectEntity.loop
+           $14e7 = DetectEntity.continue
+           $14e9 = DetectEntity.skip
+           $14f7 = DetectEntity.check
+           $1500 = DetectEntity.absSkipY
+           $150c = DetectEntity.absSkipX
+           $151c = DetectEntity.return
+           $151f = VectorFromHLToDE
+           $152f = VectorFromHLToDE.checkY
+           $1535 = VectorFromHLToDE.yPos
+           $1539 = VectorFromHLToDE.yEqu
+           $153c = VectorFromHLToDE.yNeg
+           $153e = VectorFromHLToDE.checkX
+           $1545 = VectorFromHLToDE.xPos
+           $1549 = VectorFromHLToDE.xEqu
+           $154c = VectorFromHLToDE.xNeg
+           $154e = VectorFromHLToDE.return
+  SECTION: $1550-$1773 ($0224 bytes) ["Heads Up Display"]
+           $1550 = ResetHUD
+           $159a = !0
+           $15aa = !1
+           $15be = !2
+           $15ea = UpdateHUD
+           $1615 = UpdateHUD.heartDecrement
+           $161a = UpdateHUD.heartIncrement
+           $161d = UpdateHUD.updateHeart
+           $1625 = UpdateHUD.skipHalf
+           $162d = !3
+           $1639 = UpdateHUD.skipBottom
+           $163e = !4
+           $1646 = UpdateHUD.redraw
+           $166e = UpdateHUD.skipColor
+           $1691 = UpdateHUD.clearBItem
+           $169a = UpdateHUD.drawAItem
+           $16bf = UpdateHUD.clearAItem
+           $16c8 = UpdateHUD.skipClearAItem
+           $16db = UpdateHUD.topLoop
+           $16db = !5
+           $16ec = UpdateHUD.bottom
+           $16f2 = !6
+           $16f2 = UpdateHUD.bottomLoop
+           $16fe = UpdateHUD.drawHearts
+           $1725 = !7
+           $172a = !8
+           $1735 = UpdateHUD.setUp
+           $173c = UpdateHUD.bottomSetUp
+           $1750 = UpdateHUD.heartBottomLoop
+           $1750 = !9
+           $175c = UpdateHUD.heartTopReset
+           $1761 = UpdateHUD.heartTopLoop
+           $1761 = !10
+           $176d = UpdateHUD.exit
+  SECTION: $1774-$18f2 ($017f bytes) ["Initialize"]
+           $1774 = InitializeSystem
+           $1777 = Initialize
+           $1777 = Initialize.waitVBlank
+           $1780 = Initialize.waitSkip
+           $17fc = Initialize.copyOAMDMA
+           $180a = Initialize.dmgPal
+           $181b = Initialize.cgbPal
+           $1827 = Initialize.palReset
+           $183b = InitializeGameplay
+           $183b = InitializeGameplay.waitVBlank
+           $18b3 = LoadStandardGraphics
+  SECTION: $18f3-$1a50 ($015e bytes) ["Update Palettes"]
+           $18f3 = UpdatePalettes
+           $1901 = UpdatePalettes.dmgFadeDark
+           $1925 = UpdatePalettes.dmgFadeLight
+           $1947 = UpdatePalettes.dmgReset
+           $195b = Cgb
+           $1960 = CgbReset
+           $1969 = CgbReset.backgroundLoop
+           $1971 = !0
+           $1986 = CgbReset.objectLoop
+           $198e = !1
+           $19a2 = CgbFade
+           $19af = CgbFade.backgroundLoop
+           $19b9 = !2
+           $19d1 = CgbFade.objectLoop
+           $19db = !3
+           $19f5 = FadeToColor
+           $19f7 = FadeToColor.loop
+           $1a0c = FadeToColor.up
+           $1a18 = FadeToColor.down
+           $1a22 = FadeToColor.overflow
+           $1a23 = FadeToColor.match
+           $1a2c = FadeToColor.store
+           $1a2d = FadeToColor.decrement
+           $1a33 = FadeToColor.convert
+           $1a36 = Convert24BitPalette
+  SECTION: $1a51-$1ba2 ($0152 bytes) ["audioengine"]
+           $1a51 = audio_init
+           $1a7e = audio_play_fx
+           $1a8d = audio_play_fx.nohlwrap
+           $1aa8 = audio_update
+           $1ab9 = audio_update_ch_a
+           $1ac9 = audio_update_ch_a.read_next_segment
+           $1ade = audio_update_ch_a.not_special
+           $1aeb = audio_update_ch_a.nodeep
+           $1af5 = audio_update_ch_a.nopitch
+           $1afa = audio_update_ch_a.call_updater
+           $1b08 = audio_update_ch_a.nohlwrap
+           $1b0a = update_noise
+           $1b1a = update_noise.no_vol8fix
+           $1b1f = update_pulse1
+           $1b24 = update_pulse2
+           $1b27 = update_pulse_hl
+           $1b34 = update_pulse_hl.no_new_volume
+           $1b34 = update_pulse_hl.no_vol8fix
+           $1b35 = set_pitch_hl_to_d
+           $1b3f = set_pitch_hl_to_d.nodewrap
+           $1b49 = set_pitch_hl_to_d.no_restart_note
+           $1b4b = channel_writing_jumptable
+           $1b53 = update_wave
+           $1b9e = update_wave.no_new_wave
+  SECTION: $1ba3-$1ced ($014b bytes) ["Script Handlers"]
+           $1ba3 = HandleScript
+           $1ba3 = HandleScript.nextByte
+           $1bb2 = ScriptBytecodeJumpTable
+           $1bd0 = ScriptEnd
+           $1bda = ScriptNull
+           $1be4 = ScriptText
+           $1c07 = ScriptSetposPlayer
+           $1c26 = ScriptBranch
+           $1c3f = ScriptBranch.fail
+           $1c44 = ScriptSetPointer
+           $1c54 = ScriptFunction
+           $1c6a = ScriptCompare
+           $1c88 = ScriptCompare.fail
+           $1c8c = ScriptSetTextGradient
+           $1ca1 = ScriptPause
+           $1ca8 = ScriptUnpause
+           $1cae = ScriptFade
+           $1cbc = ScriptWaitFade
+           $1cc6 = ScriptJump
+           $1cd6 = ScriptAddPointer
+           $1ce5 = ScriptExitStub
+  SECTION: $1cee-$1e2b ($013e bytes) ["Menu system"]
+           $1cee = AddMenu
+           $1cfc = AddMenu.mult
+           $1d00 = AddMenu.skipMult
+           $1d03 = AddMenu.copy
+           $1d16 = ProcessMenus
+           $1d28 = ProcessMenus.mult
+           $1d2c = ProcessMenus.skipMult
+           $1d46 = ProcessMenus.dontResetRepeatPress
+           $1d4f = ProcessMenus.getFirstDirection
+           $1d62 = ProcessMenus.skipRepeatPress
+           $1d78 = ProcessMenus.buttonPressed
+           $1d7d = ProcessMenus.selectHook
+           $1d8e = ProcessMenus.skipHook
+           $1daa = ProcessMenus.menuActionNone
+           $1dac = ProcessMenus.noButtonPressed
+           $1db8 = ProcessMenus.noRedraw
+           $1dc8 = ProcessMenus.noCloseHook
+           $1dd2 = ProcessMenus.dontClose
+           $1dd3 = ProcessMenus.menuActions
+           $1de5 = MenuMoveDown
+           $1df0 = MenuMoveDown.ok
+           $1df3 = MenuMoveUp
+           $1dfe = MenuMoveUp.ok
+           $1e01 = MenuValidate
+           $1e0a = MenuCancel
+           $1e0c = !0
+           $1e0f = MenuDoNothing
+           $1e10 = MenuAddNew
+           $1e21 = ForceMenuValidation
+           $1e27 = PreventMenuAction
+  SECTION: $1e2c-$1f5d ($0132 bytes) ["Text Box"]
+           $1e2c = HandleTextbox
+           $1e57 = HandleTextbox.cleanTiles
+           $1e6f = !0
+           $1e72 = HandleTextbox.draw
+           $1e72 = !1
+           $1ec7 = HandleTextbox.newLine
+           $1ece = HandleTextbox.nextLine
+           $1ed5 = HandleTextbox.wait
+           $1ed5 = !2
+           $1efa = HandleTextbox.ask
+           $1efe = !3
+           $1f1d = HandleTextbox.switch1
+           $1f1e = HandleTextbox.cursorDraw
+           $1f22 = HandleTextbox.cursorDraw0
+           $1f3a = HandleTextbox.cursorDraw1
+           $1f50 = HandleTextbox.acceptCheck
+           $1f56 = HandleTextbox.close
+  SECTION: $1f5e-$1ffe ($00a1 bytes) ["STAT Handler"]
+           $1f5e = Stat
+           $1f74 = ShowHUD
+           $1f74 = !0
+           $1f88 = PrintScroll
+           $1f90 = !1
+           $1f91 = !2
+           $1fad = TextboxPalette
+           $1fda = !3
+           $1fde = !4
+           $1fe0 = !5
+           $1ff7 = ExitStat
+  SECTION: $1fff-$2097 ($0099 bytes) ["Player Damage"]
+           $1fff = PlayerDamage
+           $2014 = PlayerDamage.timer
+           $201e = PlayerDamage.knockback
+           $2025 = PlayerDeath
+           $203c = PlayerDeath.disableOthers
+           $2046 = PlayerDeath.loadFadeOut
+           $204b = PlayerDeath.waitVBlank
+           $2068 = PlayerDeath.cgbFade
+           $207e = PlayerDeath.loadScript
+  SECTION: $2098-$2111 ($007a bytes) ["Common Rendering Logic"]
+           $2098 = RenderMetasprite.native
+           $2098 = RenderMetasprite
+           $209c = RenderMetasprite.foreign
+           $20a6 = RenderMetasprite.afterFrameHook
+           $20ca = RenderMetasprite.absolute
+           $20d0 = RenderMetasprite.pushSprite
+           $20f0 = RenderMetasprite.skipFlip
+           $2100 = RenderMetaspriteDirection.native
+           $2100 = RenderMetaspriteDirection
+           $2104 = RenderMetaspriteDirection.foreign
+  SECTION: $2112-$2186 ($0075 bytes) ["Player Input Movement"]
+           $2112 = PlayerInputMovement
+           $212f = PlayerInputMovement.activeMoveDown
+           $2146 = PlayerInputMovement.activeMoveUp
+           $215a = PlayerInputMovement.activeMoveLeft
+           $216e = PlayerInputMovement.activeMoveRight
+           $2180 = PlayerInputMovement.activeMoveAndSlide
+  SECTION: $2187-$21f7 ($0071 bytes) ["Player AI Follow"]
+           $2187 = PlayerAIFollow
+           $21a3 = PlayerAIFollow.velocity
+           $21a8 = PlayerAIFollow.yVel
+           $21af = !0
+           $21b6 = PlayerAIFollow.yVelNeg
+           $21ba = PlayerAIFollow.yVelPos
+           $21be = PlayerAIFollow.yVelZero
+           $21bf = PlayerAIFollow.storeYVel
+           $21c0 = PlayerAIFollow.xVel
+           $21c7 = !1
+           $21ce = PlayerAIFollow.xVelNeg
+           $21d2 = PlayerAIFollow.xVelPos
+           $21d6 = PlayerAIFollow.xVelZero
+           $21d7 = PlayerAIFollow.storeXVel
+           $21de = !2
+           $21e6 = !3
+  SECTION: $21f8-$2258 ($0061 bytes) ["Main Loop"]
+           $21f8 = Main
+           $220c = Main.end
+           $2219 = Gameplay
+           $2232 = Gameplay.skipInventoryOpen
+           $2238 = Gameplay.pauseMode
+           $2249 = Transition
+           $2254 = Menu
+  SECTION: $2259-$22b2 ($005a bytes) ["Detect Collectables"]
+           $2259 = DetectCollectables
+           $225c = DetectCollectables.for
+           $2276 = !0
+           $2284 = !1
+           $2298 = DetectCollectables.noFlag
+           $22a9 = DetectCollectables.next
+  SECTION: $22b3-$2303 ($0051 bytes) ["rom_pads"]
+           $22b3 = UpdateInput
+           $22d0 = UpdateInput.onenibble
+           $22dd = UpdateInput.knownret
+           $22de = AutoRepeat
+           $22f1 = AutoRepeat.no_restart_das
+           $2300 = AutoRepeat.have_wDasTimer
+  SECTION: $2304-$2349 ($0046 bytes) ["Load Characters"]
+           $2304 = LoadCharacters
+           $2324 = DrawString
+           $233c = DrawString.waitVRAM
+  SECTION: $234a-$2384 ($003b bytes) ["NPC Logic"]
+           $234a = RenderNPCs
+           $234f = RenderNPCs.loop
+           $237a = RenderNPCs.next
+  SECTION: $2385-$23bc ($0038 bytes) ["VBlank"]
+           $2385 = VBlank
+           $23a5 = VBlank.input
+  SECTION: $23bd-$23f4 ($0038 bytes) ["Save Functions"]
+           $23bd = VerifySRAM
+           $23cd = VerifySRAM.loop
+           $23db = VerifySRAM.fail
+  SECTION: $23f5-$242a ($0036 bytes) ["Render Collectables"]
+           $23f5 = RenderCollectables
+           $23f8 = RenderCollectables.for
+           $240f = RenderCollectables.noRound
+           $2411 = RenderCollectables.render
+           $2421 = RenderCollectables.next
+  SECTION: $242b-$2458 ($002e bytes) ["Debug Collectable"]
+           $242b = DebugCollectable
+           $2436 = DebugCollectable.function
+           $2441 = DebugCollectable.script
+           $2447 = DebugCollectable.text
+  SECTION: $2459-$2480 ($0028 bytes) ["Interpolate 8-bit"]
+           $2459 = Interp8
+           $2466 = !0
+           $2473 = !1
+           $247b = !2
+  SECTION: $2481-$24a6 ($0026 bytes) ["Heart Container Collectable"]
+           $2481 = HeartContainerCollectable
+           $248c = HeartContainerCollectable.function
+  SECTION: $24a7-$24c8 ($0022 bytes) ["Bitfield Functions"]
+           $24a7 = GetBitfieldMask
+           $24b5 = GetBitA
+           $24bf = GetBitA.highNibble
+           $24c5 = GetBitA.fixupResult
+  SECTION: $24c9-$24ea ($0022 bytes) ["Clear OAM"]
+           $24c9 = ResetOAM
+           $24da = CleanOAM
+           $24e5 = CleanOAM.loop
+  SECTION: $24eb-$250b ($0021 bytes) ["rand"]
+           $24eb = Rand
+  SECTION: $250c-$2529 ($001e bytes) ["Spawn Collectable"]
+           $250c = SpawnCollectable
+           $250f = SpawnCollectable.for
+           $2520 = SpawnCollectable.next
+  SECTION: $252a-$2544 ($001b bytes) ["Build date"]
+           $2530 = BuildDate
+  SECTION: $2545-$2557 ($0013 bytes) ["VRAM Memory Set"]
+           $2545 = VRAMSet
+           $2549 = VRAMSet.loadByte
+           $2551 = VRAMSet.decCounter
+  SECTION: $2558-$256a ($0013 bytes) ["VRAM Memory Copy"]
+           $2558 = VRAMCopy
+           $255b = VRAMCopy.loop
+  SECTION: $256b-$2577 ($000d bytes) ["VRAM Small Memory Copy"]
+           $256b = VRAMCopySmall
+  SECTION: $2578-$2584 ($000d bytes) ["Memory Copy"]
+           $2578 = MemCopy
+           $257b = MemCopy.loop
+  SECTION: $2585-$2590 ($000c bytes) ["Memory Set"]
+           $2585 = MemSet
+           $2589 = MemSet.loadByte
+           $258a = MemSet.decCounter
+  SECTION: $2591-$259c ($000c bytes) ["VRAM Memory Set Small"]
+           $2591 = VRAMSetSmall
+  SECTION: $259d-$25a6 ($000a bytes) ["Jump Table"]
+           $259d = HandleJumpTable
+  SECTION: $25a7-$25af ($0009 bytes) ["Beach Crab Definition"]
+           $25a7 = BeachCrab
+  SECTION: $25b0-$25b8 ($0009 bytes) ["Lesser Slime Definition"]
+           $25b0 = LesserSlime
+  SECTION: $25b9-$25c1 ($0009 bytes) ["Death Particle Definition"]
+           $25b9 = DeathParticle
+  SECTION: $25c2-$25c9 ($0008 bytes) ["OAM DMA routine"]
+           $25c2 = OAMDMA
+           $25c6 = OAMDMA.wait
+           $25ca = OAMDMA.end
+  SECTION: $25ca-$25cf ($0006 bytes) ["Tiber Definition"]
+           $25ca = PlayerTiber
+  SECTION: $25d0-$25d5 ($0006 bytes) ["Poppy Arrow Definition"]
+           $25d0 = PoppyArrow
+  SECTION: $25d6-$25db ($0006 bytes) ["Octavia Definition"]
+           $25d6 = PlayerOctavia
+  SECTION: $25dc-$25e1 ($0006 bytes) ["Octavia Spell Definition"]
+           $25dc = OctaviaSpell
+    SLACK: $1a2e bytes
+
+ROMX bank #1:
+  SECTION: $4000-$4196 ($0197 bytes) ["Sound Effects"]
+           $4000 = sfx_table
+           $4010 = wavebank
+           $4020 = fx_roll
+           $402b = fx_land2
+           $4035 = fx_rolltojump
+           $403e = fx_jump
+           $4051 = fx_land
+           $4061 = fx_fall
+           $407d = fx_point
+           $4084 = fx_complete
+           $40a6 = fx_launch
+           $40ae = fx_achieve
+           $40b9 = fx_combostop
+           $40ce = fx_lowcombo_bonk
+           $40d4 = fx_wavetest
+           $4189 = SoundFlame
+           $4193 = SoundLightning
+    SLACK: $3e69 bytes
+
+ROMX bank #2:
+  SECTION: $4000-$4981 ($0982 bytes) ["Beach World Map"]
+           $4000 = Beach1
+           $4100 = Beach2
+           $4200 = Beach3
+           $4300 = Beach4
+           $4400 = Beach5
+           $4500 = Beach6
+           $4600 = Beach1_script
+           $4614 = Beach2_script
+           $461a = Beach3_script
+           $461b = Beach4_script
+           $4622 = Beach5_script
+           $4623 = Beach6_script
+           $4633 = Beach_metatiles_tileset
+           $48b3 = Beach_metatiles_palettes
+           $48bf = Beach_metatiles
+           $48bf = Beach_metatiles.definitions
+           $490b = Beach_metatiles.attributes
+           $490b = Beach_metatiles.end
+           $493b = Beach_metatiles.data
+           $494e = xBeach.width
+           $494e = xBeach
+           $494f = xBeach.size
+           $4950 = xBeach.tileset
+           $4953 = xBeach.palettes
+           $4956 = xBeach.metatileSize
+           $4957 = xBeach.metatileBank
+           $4958 = xBeach.metatileDefinitions
+           $495a = xBeach.metatileAttributes
+           $495c = xBeach.metatileData
+           $495e = xBeach.map
+           $4970 = xBeach.data
+    SLACK: $367e bytes
+
+ROMX bank #3:
+  SECTION: $4000-$4676 ($0677 bytes) ["Game Over menu"]
+           $4000 = xGameOverHeader
+           $401f = xGameOverInit
+           $4068 = xGameOverInit.skipCgb
+           $406e = xHandleBPress
+           $407b = xHandleBPress.waitFade
+           $4083 = xGameOverTiles
+           $4503 = xGameOverTiles.end
+           $4503 = xGameOverMap
+           $466b = xGameOverPal
+           $466b = xGameOverMap.end
+    SLACK: $3989 bytes
+
+ROMX bank #4:
+  SECTION: $4000-$459f ($05a0 bytes) ["Player Graphics"]
+           $4000 = GfxOctavia
+           $4160 = GfxOctavia.end
+           $4160 = GfxPoppy
+           $42c0 = GfxTiber
+           $42c0 = GfxPoppy.end
+           $4420 = GfxArrow
+           $4420 = GfxTiber.end
+           $4480 = GfxSword
+           $4480 = GfxArrow.end
+           $4500 = xGfxShield
+           $4500 = GfxSword.end
+           $4560 = xGfxShield.end
+           $4560 = GfxSparkle
+           $45a0 = GfxSparkle.end
+    SLACK: $3a60 bytes
+
+ROMX bank #5:
+  SECTION: $4000-$444b ($044c bytes) ["Night Panorama"]
+           $4000 = xNightPanorama
+           $400c = xGfxNightPanoramaTiles
+           $42dc = xNightPanoramaMap
+           $437c = xNightPanoramaAttributes
+           $441c = xNightPanoramaPalettes
+    SLACK: $3bb4 bytes
+
+ROMX bank #6:
+  SECTION: $4000-$4427 ($0428 bytes) ["Beach Panorama"]
+           $4000 = BeachPanorama
+           $400c = GfxDMGBeachPanoramaTiles
+           $415c = GfxCGBBeachPanoramaTiles
+           $42ac = BeachPanoramaMap
+           $434c = BeachPanoramaAttributes
+           $43ec = BeachPanoramaPalettes
+    SLACK: $3bd8 bytes
+
+ROMX bank #7:
+  SECTION: $4000-$4414 ($0415 bytes) ["Cave World Map"]
+           $4000 = Cave1
+           $4100 = Cave1_script
+           $410a = Cave_metatiles_tileset
+           $437a = Cave_metatiles_palettes
+           $4386 = Cave_metatiles
+           $4386 = Cave_metatiles.definitions
+           $43c2 = Cave_metatiles.attributes
+           $43c2 = Cave_metatiles.end
+           $43f2 = Cave_metatiles.data
+           $4401 = xCave
+           $4401 = xCave.width
+           $4402 = xCave.size
+           $4403 = xCave.tileset
+           $4406 = xCave.palettes
+           $4409 = xCave.metatileSize
+           $440a = xCave.metatileBank
+           $440b = xCave.metatileDefinitions
+           $440d = xCave.metatileAttributes
+           $440f = xCave.metatileData
+           $4411 = xCave.map
+           $4413 = xCave.data
+    SLACK: $3beb bytes
+
+ROMX bank #8:
+  SECTION: $4000-$4367 ($0368 bytes) ["Item Icons"]
+           $4000 = obpp_Pointer
+           $4008 = obpp_ItemSelection
+           $4008 = obpp_Pointer.end
+           $4028 = obpp_ItemSelection.end
+           $4028 = GfxButtons
+           $4068 = GfxPlayerItems
+           $4068 = GfxOctaviaItems
+           $4068 = GfxFireSpell
+           $4068 = GfxButtons.end
+           $40a8 = GfxIceSpell
+           $40e8 = GfxShockSpell
+           $4128 = GfxHealSpell
+           $4168 = GfxPoppyItems
+           $4168 = GfxBow
+           $41a8 = GfxKnife
+           $41e8 = GfxCloak
+           $4228 = GfxPlaceholder
+           $4268 = GfxSwordIcon
+           $4268 = GfxTiberItems
+           $42a8 = GfxShield
+           $42e8 = GfxHammer
+           $4328 = GfxGlove
+    SLACK: $3c98 bytes
+
+ROMX bank #9:
+  SECTION: $4000-$42ff ($0300 bytes) ["Font"]
+           $4000 = GameFont
+    SLACK: $3d00 bytes
+
+ROMX bank #10:
+  SECTION: $4000-$423f ($0240 bytes) ["Overworld Map"]
+           $4000 = OverworldMap.width
+           $4000 = OverworldMap
+           $4001 = OverworldMap.size
+           $4002 = OverworldMap.tileset
+           $4005 = OverworldMap.palettes
+           $4008 = OverworldMap.metatileSize
+           $4009 = OverworldMap.metatileBank
+           $400a = OverworldMap.metatileDefinitions
+           $400c = OverworldMap.metatileAttributes
+           $400e = OverworldMap.metatileData
+           $4010 = OverworldMap.map
+           $4018 = OverworldMap.data
+           $4020 = DebugMap
+           $4120 = DebugMap.data
+           $413f = DebugMap2
+           $423f = DebugMap2.data
+    SLACK: $3dc0 bytes
+
+ROMX bank #11:
+  SECTION: $4000-$41d0 ($01d1 bytes) ["Octavia AI"]
+           $4000 = OctaviaPlayerLogic
+           $4013 = OctaviaPlayerLogic.acceptDamage
+           $4025 = OctaviaPlayerLogic.decTimer
+           $4029 = OctaviaPlayerLogic.noDamage
+           $4029 = OctaviaPlayerLogic.activeControl
+           $4032 = OctaviaPlayerLogic.stateJumpTable
+           $403e = OctaviaActiveNormal
+           $4056 = OctaviaActiveNormal.aiModesTable
+           $4058 = OctaviaActiveNormal.skipAISwitch
+           $406e = OctaviaActiveNormal.activeMove
+           $4074 = OctaviaActiveNormal.transitionCheck
+           $408a = OctaviaDamage
+           $4090 = OctaviaRod.heal
+           $4090 = OctaviaRod
+           $4098 = OctaviaRod.fire
+           $409f = OctaviaRod.ice
+           $40a6 = OctaviaRod.shock
+           $40ab = OctaviaRod.shoot
+           $40ad = OctaviaRod.shootHeal
+           $40d7 = OctaviaRod.skipInit
+           $4121 = OctaviaRod.neg
+           $4125 = OctaviaRod.pos
+           $4129 = OctaviaRod.playSound
+           $412e = OctaviaRod.forceExit
+           $4133 = OctaviaAIFollow
+           $4145 = OctaviaAIFollow.follow
+           $4151 = GfxPlayerSpells
+    SLACK: $3e2f bytes
+
+ROMX bank #12:
+  SECTION: $4000-$4168 ($0169 bytes) ["Tiber Metasprites"]
+           $4000 = TiberMetasprites
+           $4038 = TiberMetasprites.spriteDown
+           $4041 = TiberMetasprites.spriteUp
+           $404a = TiberMetasprites.spriteRight
+           $4053 = TiberMetasprites.spriteLeft
+           $405c = TiberMetasprites.spriteDownStep
+           $4065 = TiberMetasprites.spriteUpStep
+           $406e = TiberMetasprites.spriteRightStep
+           $4077 = TiberMetasprites.spriteLeftStep
+           $4080 = TiberMetasprites.spriteDownSwing
+           $4089 = TiberMetasprites.spriteUpSwing
+           $4092 = TiberMetasprites.spriteRightSwing
+           $409b = TiberMetasprites.spriteLeftSwing
+           $40a4 = TiberMetasprites.spriteDownGrab
+           $40ad = TiberMetasprites.spriteUpGrab
+           $40b6 = TiberMetasprites.spriteDownSword
+           $40c3 = TiberMetasprites.spriteUpSword
+           $40d0 = TiberMetasprites.spriteRightSword
+           $40e1 = TiberMetasprites.spriteLeftSword
+           $40f2 = TiberMetasprites.spriteDownSwoosh
+           $4103 = TiberMetasprites.spriteUpSwoosh
+           $4114 = TiberMetasprites.spriteRightSwoosh
+           $4129 = TiberMetasprites.spriteLeftSwoosh
+           $413e = TiberMetasprites.spriteDownShield
+           $414f = TiberMetasprites.spriteRightShield
+           $415c = TiberMetasprites.spriteLeftShield
+    SLACK: $3e97 bytes
+
+ROMX bank #13:
+  SECTION: $4000-$4167 ($0168 bytes) ["Tiber AI"]
+           $4000 = TiberPlayerLogic
+           $4013 = TiberPlayerLogic.acceptDamage
+           $4025 = TiberPlayerLogic.decTimer
+           $4029 = TiberPlayerLogic.noDamage
+           $4029 = TiberPlayerLogic.activeControl
+           $4032 = TiberPlayerLogic.stateTable
+           $403e = TiberActiveNormal
+           $4057 = TiberActiveNormal.aiStateTable
+           $4059 = TiberActiveNormal.skipAISwitch
+           $406f = TiberActiveNormal.activeMove
+           $4075 = TiberActiveNormal.transitionCheck
+           $408b = TiberDamage
+           $40a1 = TiberDamage.positive
+           $40a8 = TiberDamage.negative
+           $40ad = TiberDamage.success
+           $40c1 = TiberDamage.noShield
+           $40c7 = TiberSword
+           $40d4 = TiberSword.skipInit
+           $4124 = TiberSword.exit
+           $412f = TiberShield
+           $413d = TiberShield.noRelease
+           $4148 = TiberAIFollow
+           $415a = TiberAIFollow.forceClose
+           $415c = TiberAIFollow.follow
+    SLACK: $3e98 bytes
+
+ROMX bank #14:
+  SECTION: $4000-$4132 ($0133 bytes) ["Inventory Data"]
+           $4000 = InventoryMap
+           $40c8 = InventoryGraphics
+           $40c8 = InventoryMap.end
+           $4108 = InventoryGraphics.end
+           $4108 = Text
+           $4108 = Text.save
+           $410d = Text.saveAndExit
+           $4119 = Text.close
+           $411f = Text.octavia
+           $4127 = Text.poppy
+           $412d = Text.tiber
+    SLACK: $3ecd bytes
+
+ROMX bank #15:
+  SECTION: $4000-$412b ($012c bytes) ["Dialogue Gradients"]
+           $4000 = GradientPink
+           $403c = GradientRainbow
+           $4078 = GradientGreen
+           $40b4 = GradientBlue
+           $40f0 = GradientRed
+    SLACK: $3ed4 bytes
+
+ROMX bank #16:
+  SECTION: $4000-$411e ($011f bytes) ["Poppy AI"]
+           $4000 = PoppyPlayerLogic
+           $4013 = PoppyPlayerLogic.acceptDamage
+           $4025 = PoppyPlayerLogic.decTimer
+           $4029 = PoppyPlayerLogic.noDamage
+           $4029 = PoppyPlayerLogic.activeControl
+           $4032 = PoppyPlayerLogic.stateJumpTable
+           $403e = PoppyActiveNormal
+           $4056 = PoppyActiveNormal.aiStateTable
+           $4058 = PoppyActiveNormal.skipAISwitch
+           $406e = PoppyActiveNormal.activeMove
+           $4074 = PoppyActiveNormal.transitionCheck
+           $408a = PoppyDamage
+           $4090 = PoppyBow
+           $40a4 = PoppyBow.skipInit
+           $40c3 = PoppyBow.spawn
+           $40eb = PoppyBow.left
+           $40f2 = PoppyBow.down
+           $40f9 = PoppyBow.up
+           $4100 = PoppyBow.right
+           $4105 = PoppyBow.storeFrameDec
+           $4106 = PoppyBow.storeFrame
+           $410c = PoppyBow.forceExit
+           $4111 = PoppyAIFollow
+    SLACK: $3ee1 bytes
+
+ROMX bank #17:
+  SECTION: $4000-$411a ($011b bytes) ["Titlescreen"]
+           $4000 = TitlescreenHeader
+           $401f = TitlescreenInit
+           $4020 = TitlescreenInit.waitVBlank
+           $4084 = TitlescreenInit.cgbSkip
+           $408b = TitlescreenRedraw
+           $40a1 = TitlescreenRedraw.mult
+           $40a8 = TitlescreenRedraw.multSkip
+           $40bd = !0
+           $40bf = !1
+           $40c3 = !2
+           $40d9 = !3
+           $40e5 = !4
+           $40f6 = HandleAPress
+           $4104 = MenuString.start
+           $4104 = MenuString
+           $410b = MenuString.options
+           $4113 = TitlescreenSprites
+           $4113 = TitlescreenSprites.start
+           $4117 = TitlescreenSprites.options
+    SLACK: $3ee5 bytes
+
+ROMX bank #18:
+  SECTION: $4000-$40d6 ($00d7 bytes) ["Octavia Spell"]
+           $4000 = OctaviaSpellLogic
+           $4059 = OctaviaSpellLogic.destroySelf
+           $4064 = OctaviaSpellLogic.checkBurn
+           $4096 = OctaviaSpellLogic.heal
+           $40ad = OctaviaSpellLogic.skipInc
+           $40b6 = OctaviaSpellMetasprites
+           $40bc = OctaviaSpellMetasprites.red
+           $40c5 = OctaviaSpellMetasprites.green
+           $40ce = OctaviaSpellMetasprites.blue
+    SLACK: $3f29 bytes
+
+ROMX bank #19:
+  SECTION: $4000-$40c1 ($00c2 bytes) ["Beach Crab Logic"]
+           $4000 = BeachCrabScript
+           $4009 = BeachCrabScript.chase
+           $400f = !0
+           $4024 = BeachCrabScript.scrlab1
+           $402b = BeachCrabScript.scrlab0
+           $4031 = !1
+           $4040 = BeachCrabScript.scrlab2
+           $4043 = BeachCrabScript.damage
+           $4049 = !2
+           $4052 = BeachCrabScript.scrlab3
+           $405d = BeachCrabScript.scrlab4
+           $4060 = BeachCrabLogic
+           $406e = BeachCrabLogic.skipInit
+           $408b = BeachCrabLogic.noDamage
+           $4096 = CrabMetasprites
+           $409e = CrabMetasprites.normal
+           $40a7 = CrabMetasprites.left
+           $40b0 = CrabMetasprites.right
+           $40b9 = CrabMetasprites.both
+    SLACK: $3f3e bytes
+
+ROMX bank #20:
+  SECTION: $4000-$40bf ($00c0 bytes) ["Overworld Tiles"]
+           $4000 = OverworldTiles
+           $40c0 = OverworldTiles.end
+    SLACK: $3f40 bytes
+
+ROMX bank #21:
+  SECTION: $4000-$40b4 ($00b5 bytes) ["Lesser Slime Logic"]
+           $4000 = LesserSlimeLogic
+           $400e = LesserSlimeLogic.skipInit
+           $402b = LesserSlimeLogic.noDamage
+           $4036 = LesserSlimeScript
+           $403c = LesserSlimeScript.chase
+           $403f = !0
+           $404e = LesserSlimeScript.scrlab0
+           $4051 = !1
+           $4061 = LesserSlimeScript.scrlab1
+           $4064 = LesserSlimeScript.damage
+           $406a = !2
+           $4073 = LesserSlimeScript.scrlab2
+           $407e = LesserSlimeScript.scrlab3
+           $4081 = SlimeMetasprites
+           $4091 = SlimeMetasprites.normal
+           $409a = SlimeMetasprites.bounce
+           $40a3 = SlimeMetasprites.flip
+           $40ac = SlimeMetasprites.bounceFlip
+    SLACK: $3f4b bytes
+
+ROMX bank #22:
+  SECTION: $4000-$40b0 ($00b1 bytes) ["Manage Save File"]
+           $4000 = xLoadRepawnPoint
+           $403a = xLoadSaveFile
+           $4042 = xLoadSaveFile.copy
+           $404d = xLoadSaveFile.loop
+           $405f = xLoadSaveFile.exit
+           $4076 = xStoreSaveFile
+           $407e = xStoreSaveFile.copy
+           $4092 = xStoreSaveFile.exit
+           $4097 = xSaveCopyList
+    SLACK: $3f4f bytes
+
+ROMX bank #23:
+  SECTION: $4000-$409d ($009e bytes) ["Poppy Metasprites"]
+           $4000 = PoppyMetasprites
+           $4000 = PoppyMetasprites.down
+           $4002 = PoppyMetasprites.up
+           $4004 = PoppyMetasprites.right
+           $4006 = PoppyMetasprites.left
+           $4008 = PoppyMetasprites.downStep
+           $400a = PoppyMetasprites.upStep
+           $400c = PoppyMetasprites.rightStep
+           $400e = PoppyMetasprites.leftStep
+           $4010 = PoppyMetasprites.downSwing
+           $4012 = PoppyMetasprites.upSwing
+           $4014 = PoppyMetasprites.rightSwing
+           $4016 = PoppyMetasprites.leftSwing
+           $4018 = PoppyMetasprites.downGrab
+           $401a = PoppyMetasprites.upGrab
+           $401c = PoppyMetasprites.rightGrab
+           $401e = PoppyMetasprites.leftGrab
+           $4020 = PoppyMetasprites.spriteDown
+           $4029 = PoppyMetasprites.spriteUp
+           $4032 = PoppyMetasprites.spriteRight
+           $403b = PoppyMetasprites.spriteLeft
+           $4044 = PoppyMetasprites.spriteDownStep
+           $404d = PoppyMetasprites.spriteUpStep
+           $4056 = PoppyMetasprites.spriteRightStep
+           $405f = PoppyMetasprites.spriteLeftStep
+           $4068 = PoppyMetasprites.spriteDownSwing
+           $4071 = PoppyMetasprites.spriteUpSwing
+           $407a = PoppyMetasprites.spriteRightSwing
+           $4083 = PoppyMetasprites.spriteLeftSwing
+           $408c = PoppyMetasprites.spriteDownGrab
+           $4095 = PoppyMetasprites.spriteUpGrab
+    SLACK: $3f62 bytes
+
+ROMX bank #24:
+  SECTION: $4000-$409d ($009e bytes) ["Octavia Metasprites"]
+           $4000 = OctaviaMetasprites
+           $4000 = OctaviaMetasprites.down
+           $4002 = OctaviaMetasprites.up
+           $4004 = OctaviaMetasprites.right
+           $4006 = OctaviaMetasprites.left
+           $4008 = OctaviaMetasprites.downStep
+           $400a = OctaviaMetasprites.upStep
+           $400c = OctaviaMetasprites.rightStep
+           $400e = OctaviaMetasprites.leftStep
+           $4010 = OctaviaMetasprites.downSwing
+           $4012 = OctaviaMetasprites.upSwing
+           $4014 = OctaviaMetasprites.rightSwing
+           $4016 = OctaviaMetasprites.leftSwing
+           $4018 = OctaviaMetasprites.downGrab
+           $401a = OctaviaMetasprites.upGrab
+           $401c = OctaviaMetasprites.rightGrab
+           $401e = OctaviaMetasprites.leftGrab
+           $4020 = OctaviaMetasprites.spriteDown
+           $4029 = OctaviaMetasprites.spriteUp
+           $4032 = OctaviaMetasprites.spriteRight
+           $403b = OctaviaMetasprites.spriteLeft
+           $4044 = OctaviaMetasprites.spriteDownStep
+           $404d = OctaviaMetasprites.spriteUpStep
+           $4056 = OctaviaMetasprites.spriteRightStep
+           $405f = OctaviaMetasprites.spriteLeftStep
+           $4068 = OctaviaMetasprites.spriteDownSwing
+           $4071 = OctaviaMetasprites.spriteUpSwing
+           $407a = OctaviaMetasprites.spriteRightSwing
+           $4083 = OctaviaMetasprites.spriteLeftSwing
+           $408c = OctaviaMetasprites.spriteDownGrab
+           $4095 = OctaviaMetasprites.spriteUpGrab
+    SLACK: $3f62 bytes
+
+ROMX bank #25:
+  SECTION: $4000-$409a ($009b bytes) ["Player Death Script"]
+           $4000 = xPlayerDeathScript
+           $4005 = xPlayerDeathScript.down
+           $401f = xPlayerDeathScript.downWait
+           $402c = xPlayerDeathScript.left
+           $4038 = xPlayerDeathScript.leftWait
+           $4045 = xPlayerDeathScript.up
+           $4051 = xPlayerDeathScript.upWait
+           $405e = xPlayerDeathScript.right
+           $406a = xPlayerDeathScript.rightWait
+           $4077 = xPlayerDeathScript.fall
+           $407b = xPlayerDeathScript.fadeFully
+           $4088 = xPlayerDeathScript.waitFade
+    SLACK: $3f65 bytes
+
+ROMX bank #26:
+  SECTION: $4000-$4092 ($0093 bytes) ["Octavia Dialogue"]
+           $4000 = OctaviaGeneric
+           $4008 = OctaviaGeneric.followDialogue
+           $401a = OctaviaGeneric.waitDialogue
+           $402c = OctaviaGeneric.end
+           $402d = OctaviaGeneric.waitText
+           $4064 = OctaviaGeneric.followText
+    SLACK: $3f6d bytes
+
+ROMX bank #27:
+  SECTION: $4000-$408c ($008d bytes) ["Poppy Dialogue"]
+           $4000 = PoppyGeneric
+           $4008 = PoppyGeneric.followDialogue
+           $401a = PoppyGeneric.waitDialogue
+           $402c = PoppyGeneric.end
+           $402d = PoppyGeneric.waitText
+           $4059 = PoppyGeneric.followText
+    SLACK: $3f73 bytes
+
+ROMX bank #28:
+  SECTION: $4000-$4088 ($0089 bytes) ["Poppy Arrow"]
+           $4000 = PoppyArrowLogic
+           $4056 = PoppyArrowLogic.destroySelf
+           $4063 = PoppyArrowLogic.popRet
+           $4065 = ArrowMetasprites
+           $406d = ArrowMetasprites.down
+           $4072 = ArrowMetasprites.up
+           $4077 = ArrowMetasprites.right
+           $4080 = ArrowMetasprites.left
+    SLACK: $3f77 bytes
+
+ROMX bank #29:
+  SECTION: $4000-$4085 ($0086 bytes) ["Beach scripts"]
+           $4000 = xBeachGetSpellScript
+           $4005 = !0
+           $4012 = !1
+           $401a = !2
+           $4027 = !3
+           $4037 = xBeachGetSpellScript.entranceBlocked
+           $405f = xBeachGetSpellScript.useFire
+    SLACK: $3f7a bytes
+
+ROMX bank #30:
+  SECTION: $4000-$4083 ($0084 bytes) ["Save Verification"]
+           $4000 = xSaveCheckString
+           $4084 = xSaveCheckString.end
+    SLACK: $3f7c bytes
+
+ROMX bank #31:
+  SECTION: $4000-$4083 ($0084 bytes) ["Overworld Palettes"]
+           $4000 = OverworldPalettes
+           $4000 = OverworldPalettes.bcpd
+           $4048 = OverworldPalettes.ocpd
+    SLACK: $3f7c bytes
+
+ROMX bank #32:
+  SECTION: $4000-$4081 ($0082 bytes) ["Tiber Dialogue"]
+           $4000 = TiberGeneric
+           $4008 = TiberGeneric.followDialogue
+           $401a = TiberGeneric.waitDialogue
+           $402c = TiberGeneric.end
+           $402d = TiberGeneric.waitText
+           $4057 = TiberGeneric.followText
+    SLACK: $3f7e bytes
+
+ROMX bank #33:
+  SECTION: $4000-$4063 ($0064 bytes) ["Dialogue"]
+           $4000 = TextboxMap
+    SLACK: $3f9c bytes
+
+ROMX bank #34:
+  SECTION: $4000-$405e ($005f bytes) ["Death Particle Logic"]
+           $4000 = DeathParticleLogic
+           $4003 = DeathParticleScript
+           $4009 = !0
+           $4011 = DeathParticleScript.scrlab0
+           $4017 = !1
+           $401f = DeathParticleScript.scrlab1
+           $4025 = !2
+           $402d = DeathParticleScript.scrlab2
+           $402e = DeathParticleMetasprites
+           $4034 = DeathParticleMetasprites.start
+           $4045 = DeathParticleMetasprites.alt
+           $4056 = DeathParticleMetasprites.single
+    SLACK: $3fa1 bytes
+
+ROMX bank #35:
+  SECTION: $4000-$403f ($0040 bytes) ["Heart Container Tiles"]
+           $4000 = xGfxHeartContainer
+           $4040 = xGfxHeartContainer.end
+    SLACK: $3fc0 bytes
+
+ROMX bank #36:
+  SECTION: $4000-$403e ($003f bytes) ["Metatiles"]
+           $4000 = DebugMetatiles
+           $4000 = DebugMetatiles.definitions
+           $401c = DebugMetatiles.end
+           $401c = DebugMetatiles.attributes
+           $4038 = DebugMetatiles.data
+    SLACK: $3fc1 bytes
+
+ROMX bank #37:
+  SECTION: $4000-$403b ($003c bytes) ["Player Palettes"]
+           $4000 = PalOctavia
+           $4000 = PalPlayers
+           $400c = PalPoppy
+           $4018 = PalTiber
+           $4024 = PalHurt
+           $4030 = PalGrey
+    SLACK: $3fc4 bytes
+
+ROMX bank #38:
+  SECTION: $4000-$402f ($0030 bytes) ["User Interface"]
+           $4000 = GfxHeart
+           $4030 = GfxHeart.end
+    SLACK: $3fd0 bytes
+
+ROMX bank #39:
+  SECTION: $4000-$402b ($002c bytes) ["Template Saves"]
+           $4000 = xDefaultSaveFile
+           $4016 = xDebugSaveFile
+    SLACK: $3fd4 bytes
+
+ROMX bank #40:
+  SECTION: $4000-$401c ($001d bytes) ["Get Item Graphics"]
+           $4000 = xGetItemGfx
+    SLACK: $3fe3 bytes
+
+SRAM bank #0:
+  SECTION: $a000-$a083 ($0084 bytes) ["Save Data"]
+           $a000 = sCheckString
+  SECTION: $a084-$a099 ($0016 bytes) ["Save Files"]
+           $a084 = sSave0
+           $a084 = sSaveFiles
+           $a084 = sSave0_WorldMapID
+           $a085 = sSave0_WorldMapX
+           $a086 = sSave0_WorldMapY
+           $a087 = sSave0_OctaviaPosX
+           $a088 = sSave0_OctaviaPosY
+           $a089 = sSave0_PoppyPosX
+           $a08a = sSave0_PoppyPosY
+           $a08b = sSave0_TiberPosX
+           $a08c = sSave0_TiberPosY
+           $a08d = sSave0_OctaviaDisabled
+           $a08e = sSave0_PoppyDisabled
+           $a08f = sSave0_TiberDisabled
+           $a090 = sSave0_OctaviaMaxHealth
+           $a091 = sSave0_PoppyMaxHealth
+           $a092 = sSave0_TiberMaxHealth
+           $a093 = sSave0_OctaviaUnlockedItems
+           $a094 = sSave0_PoppyUnlockedItems
+           $a095 = sSave0_TiberUnlockedItems
+           $a096 = sSave0_OctaviaEquippedItems
+           $a097 = sSave0_PoppyEquippedItems
+           $a098 = sSave0_TiberEquippedItems
+           $a099 = sSave0_Bitfield
+    SLACK: $1f66 bytes
+
+WRAM0 bank #0:
+  SECTION: $c000-$c09f ($00a0 bytes) ["Shadow OAM"]
+           $c000 = wShadowOAM
+           $c0a0 = wShadowOAM.end
+  SECTION: $c0a0-$c0bf ($0020 bytes) ["Collectables Array"]
+           $c0a0 = wCollectablesArray
+           $c0a0 = wCollectable0_Data
+           $c0a0 = wCollectable0
+           $c0a2 = wCollectable0_Lifetime
+           $c0a3 = wCollectable0_YPos
+           $c0a4 = wCollectable0_XPos
+           $c0a5 = wCollectable0_CollectionFlag
+           $c0a6 = wCollectable0_AlignmentPadding
+           $c0a8 = wCollectable1_Data
+           $c0a8 = wCollectable1
+           $c0aa = wCollectable1_Lifetime
+           $c0ab = wCollectable1_YPos
+           $c0ac = wCollectable1_XPos
+           $c0ad = wCollectable1_CollectionFlag
+           $c0ae = wCollectable1_AlignmentPadding
+           $c0b0 = wCollectable2_Data
+           $c0b0 = wCollectable2
+           $c0b2 = wCollectable2_Lifetime
+           $c0b3 = wCollectable2_YPos
+           $c0b4 = wCollectable2_XPos
+           $c0b5 = wCollectable2_CollectionFlag
+           $c0b6 = wCollectable2_AlignmentPadding
+           $c0b8 = wCollectable3_Data
+           $c0b8 = wCollectable3
+           $c0ba = wCollectable3_Lifetime
+           $c0bb = wCollectable3_YPos
+           $c0bc = wCollectable3_XPos
+           $c0bd = wCollectable3_CollectionFlag
+           $c0be = wCollectable3_AlignmentPadding
+  SECTION: $c0c0-$c0df ($0020 bytes) ["audio_wram"]
+           $c0c0 = audio_channels
+  SECTION: $c0e0-$c0f7 ($0018 bytes) ["Player Variables"]
+           $c0e0 = wActivePlayer
+           $c0e0 = wPlayerVariables
+           $c0e1 = wTransitionBuffer
+           $c0e2 = wAllyLogicMode
+           $c0e3 = wPlayerMaxHealth
+           $c0e3 = wPlayerMaxHealth.octavia
+           $c0e4 = wPlayerMaxHealth.poppy
+           $c0e5 = wPlayerMaxHealth.tiber
+           $c0e6 = wPlayerDisabled
+           $c0e6 = wPlayerDisabled.octavia
+           $c0e7 = wPlayerDisabled.poppy
+           $c0e8 = wPlayerDisabled.tiber
+           $c0e9 = wPlayerWaitLink
+           $c0e9 = wPlayerWaitLink.octavia
+           $c0ea = wPlayerWaitLink.poppy
+           $c0eb = wPlayerWaitLink.tiber
+           $c0ec = wPlayerRoom
+           $c0ec = wPlayerRoom.octavia
+           $c0ee = wPlayerRoom.poppy
+           $c0f0 = wPlayerRoom.tiber
+           $c0f2 = wPlayerEquipped
+           $c0f2 = wPlayerEquipped.octavia
+           $c0f3 = wPlayerEquipped.poppy
+           $c0f4 = wPlayerEquipped.tiber
+           $c0f5 = wItems.octavia
+           $c0f5 = wItems
+           $c0f6 = wItems.poppy
+           $c0f7 = wItems.tiber
+           $c0f8 = wPlayerVariablesEnd
+  SECTION: $c0f8-$c0fd ($0006 bytes) ["Text Variables"]
+           $c0f8 = wTextState
+           $c0f9 = wTextBank
+           $c0fa = wTextPointer
+           $c0fc = wTextScreenIndex
+           $c0fd = wTextAnswer
+  SECTION: $c0fe-$c0ff ($0002 bytes) ["ram_pads"]
+           $c0fe = wDasKeys
+           $c0ff = wDasTimer
+  SECTION: $c100-$c17f ($0080 bytes) ["Entity Script Fields"]
+           $c100 = wEntityFieldArray
+  SECTION: $c180-$c1ba ($003b bytes) ["Active Map Variables"]
+           $c180 = wActiveWorldMap
+           $c181 = wTileLoadingProgress
+           $c182 = wWorldMapPositionX
+           $c183 = wWorldMapPositionY
+           $c184 = wOldMapPosX
+           $c185 = wOldMapPosY
+           $c186 = wWarpData0
+           $c186 = wWarpData0_Map
+           $c187 = wWarpData0_YRoom
+           $c188 = wWarpData0_XRoom
+           $c189 = wWarpData0_YPos
+           $c18a = wWarpData0_XPos
+           $c18b = wWarpData1_Map
+           $c18b = wWarpData1
+           $c18c = wWarpData1_YRoom
+           $c18d = wWarpData1_XRoom
+           $c18e = wWarpData1_YPos
+           $c18f = wWarpData1_XPos
+           $c190 = wWarpData2_Map
+           $c190 = wWarpData2
+           $c191 = wWarpData2_YRoom
+           $c192 = wWarpData2_XRoom
+           $c193 = wWarpData2_YPos
+           $c194 = wWarpData2_XPos
+           $c195 = wWarpData3_Map
+           $c195 = wWarpData3
+           $c196 = wWarpData3_YRoom
+           $c197 = wWarpData3_XRoom
+           $c198 = wWarpData3_YPos
+           $c199 = wWarpData3_XPos
+           $c19a = wDestroyedMapTile
+           $c19b = wDespawnMap
+           $c1bb = wDespawnMap.end
+  SECTION: $c1bb-$c1cd ($0013 bytes) ["Script Variables"]
+           $c1bb = wActiveScriptPointer
+           $c1be = wScriptVars
+  SECTION: $c1ce-$c1d9 ($000c bytes) ["HUD Variables"]
+           $c1ce = wEnableHUD
+           $c1cf = wHUDActivePlayerBuffer
+           $c1d0 = wHUDPlayerHealthBuffer
+           $c1d0 = wHUDPlayerHealthBuffer.octavia
+           $c1d1 = wHUDPlayerHealthBuffer.poppy
+           $c1d2 = wHUDPlayerHealthBuffer.tiber
+           $c1d3 = wPrintState
+           $c1d4 = wHUDPrintTarget
+           $c1d7 = wHUDPrintIndex
+           $c1d8 = wHUDPrintScroll
+           $c1d9 = wPrintWaitTimer
+  SECTION: $c1da-$c1e2 ($0009 bytes) ["Save Position Data"]
+           $c1da = wRespawnPoint
+           $c1da = wRespawnPoint_WorldMapID
+           $c1db = wRespawnPoint_WorldMapX
+           $c1dc = wRespawnPoint_WorldMapY
+           $c1dd = wRespawnPoint_OctaviaPosX
+           $c1de = wRespawnPoint_OctaviaPosY
+           $c1df = wRespawnPoint_PoppyPosX
+           $c1e0 = wRespawnPoint_PoppyPosY
+           $c1e1 = wRespawnPoint_TiberPosX
+           $c1e2 = wRespawnPoint_TiberPosY
+  SECTION: $c1e3-$c1e7 ($0005 bytes) ["Stat Data"]
+           $c1e3 = wStaticFX
+           $c1e4 = wTextboxPalsBank
+           $c1e5 = wTextboxPalettes
+           $c1e7 = wTextboxFadeProgress
+  SECTION: $c1e8-$c1eb ($0004 bytes) ["VBlank Vars"]
+           $c1e8 = wInterruptBankBuffer
+           $c1e9 = wGameplaySC.x
+           $c1e9 = wGameplaySC
+           $c1ea = wGameplaySC.y
+           $c1eb = wFrameTimer
+  SECTION: $c1ec-$c1ef ($0004 bytes) ["rand_ram"]
+           $c1ec = randstate
+  SECTION: $c1f0-$c1f2 ($0003 bytes) ["Main Vars"]
+           $c1f0 = wNewFrame
+           $c1f1 = wGameplayScrollBuffer
+           $c1f1 = wGameplayScrollBuffer.x
+           $c1f2 = wGameplayScrollBuffer.y
+  SECTION: $c1f3-$c1f5 ($0003 bytes) ["Test Menu Vars"]
+           $c1f3 = wPointerDir
+           $c1f4 = wPointerOffset
+           $c1f5 = wPointerYPos
+  SECTION: $c1f6-$c1f8 ($0003 bytes) ["Inventory Variables"]
+           $c1f6 = wPlayerDollDirection
+           $c1f7 = wPlayerDollTimer
+           $c1f8 = wLastSelectedItem
+  SECTION: $c1f9-$c1fa ($0002 bytes) ["Scroll Loader Vars"]
+           $c1f9 = wVBlankMapLoadPosition
+           $c1fa = wRoomTransitionDirection
+  SECTION: $c1fb-$c1fb ($0001 byte) ["Flag Bitfield"]
+           $c1fb = wBitfield
+  SECTION: $c1fc-$c1fc ($0001 byte) ["Tiber Using Shield"]
+           $c1fc = wIsTiberShielded
+  SECTION: $c1fd-$c1fd ($0001 byte) ["Pal Common"]
+           $c1fd = wPaletteState
+  SECTION: $c1fe-$c1fe ($0001 byte) ["Octavia Vars"]
+           $c1fe = wOctaviaSpellActive
+  SECTION: $c1ff-$c1ff ($0001 byte) ["Poppy Vars"]
+           $c1ff = wPoppyActiveArrows
+  SECTION: $c200-$c27f ($0080 bytes) ["Entity Array"]
+           $c200 = wEntityArray
+           $c200 = wEntity0
+           $c200 = wEntity0_DataPointer
+           $c202 = wEntity0_YPos
+           $c203 = wEntity0_XPos
+           $c204 = wEntity0_YVel
+           $c205 = wEntity0_XVel
+           $c206 = wEntity0_CollisionData
+           $c207 = wEntity0_Health
+           $c208 = wEntity0_Direction
+           $c209 = wEntity0_Frame
+           $c20a = wEntity0_Flags
+           $c20b = wEntity0_State
+           $c20c = wEntity0_Timer
+           $c20d = wEntity0_InvTimer
+           $c20e = wEntity0_YFrac
+           $c20f = wEntity0_XFrac
+           $c210 = wEntity1_DataPointer
+           $c210 = wEntity1
+           $c212 = wEntity1_YPos
+           $c213 = wEntity1_XPos
+           $c214 = wEntity1_YVel
+           $c215 = wEntity1_XVel
+           $c216 = wEntity1_CollisionData
+           $c217 = wEntity1_Health
+           $c218 = wEntity1_Direction
+           $c219 = wEntity1_Frame
+           $c21a = wEntity1_Flags
+           $c21b = wEntity1_State
+           $c21c = wEntity1_Timer
+           $c21d = wEntity1_InvTimer
+           $c21e = wEntity1_YFrac
+           $c21f = wEntity1_XFrac
+           $c220 = wEntity2_DataPointer
+           $c220 = wEntity2
+           $c222 = wEntity2_YPos
+           $c223 = wEntity2_XPos
+           $c224 = wEntity2_YVel
+           $c225 = wEntity2_XVel
+           $c226 = wEntity2_CollisionData
+           $c227 = wEntity2_Health
+           $c228 = wEntity2_Direction
+           $c229 = wEntity2_Frame
+           $c22a = wEntity2_Flags
+           $c22b = wEntity2_State
+           $c22c = wEntity2_Timer
+           $c22d = wEntity2_InvTimer
+           $c22e = wEntity2_YFrac
+           $c22f = wEntity2_XFrac
+           $c230 = wEntity3_DataPointer
+           $c230 = wEntity3
+           $c232 = wEntity3_YPos
+           $c233 = wEntity3_XPos
+           $c234 = wEntity3_YVel
+           $c235 = wEntity3_XVel
+           $c236 = wEntity3_CollisionData
+           $c237 = wEntity3_Health
+           $c238 = wEntity3_Direction
+           $c239 = wEntity3_Frame
+           $c23a = wEntity3_Flags
+           $c23b = wEntity3_State
+           $c23c = wEntity3_Timer
+           $c23d = wEntity3_InvTimer
+           $c23e = wEntity3_YFrac
+           $c23f = wEntity3_XFrac
+           $c240 = wEntity4
+           $c240 = wEntity4_DataPointer
+           $c242 = wEntity4_YPos
+           $c243 = wEntity4_XPos
+           $c244 = wEntity4_YVel
+           $c245 = wEntity4_XVel
+           $c246 = wEntity4_CollisionData
+           $c247 = wEntity4_Health
+           $c248 = wEntity4_Direction
+           $c249 = wEntity4_Frame
+           $c24a = wEntity4_Flags
+           $c24b = wEntity4_State
+           $c24c = wEntity4_Timer
+           $c24d = wEntity4_InvTimer
+           $c24e = wEntity4_YFrac
+           $c24f = wEntity4_XFrac
+           $c250 = wEntity5_DataPointer
+           $c250 = wEntity5
+           $c252 = wEntity5_YPos
+           $c253 = wEntity5_XPos
+           $c254 = wEntity5_YVel
+           $c255 = wEntity5_XVel
+           $c256 = wEntity5_CollisionData
+           $c257 = wEntity5_Health
+           $c258 = wEntity5_Direction
+           $c259 = wEntity5_Frame
+           $c25a = wEntity5_Flags
+           $c25b = wEntity5_State
+           $c25c = wEntity5_Timer
+           $c25d = wEntity5_InvTimer
+           $c25e = wEntity5_YFrac
+           $c25f = wEntity5_XFrac
+           $c260 = wEntity6_DataPointer
+           $c260 = wEntity6
+           $c262 = wEntity6_YPos
+           $c263 = wEntity6_XPos
+           $c264 = wEntity6_YVel
+           $c265 = wEntity6_XVel
+           $c266 = wEntity6_CollisionData
+           $c267 = wEntity6_Health
+           $c268 = wEntity6_Direction
+           $c269 = wEntity6_Frame
+           $c26a = wEntity6_Flags
+           $c26b = wEntity6_State
+           $c26c = wEntity6_Timer
+           $c26d = wEntity6_InvTimer
+           $c26e = wEntity6_YFrac
+           $c26f = wEntity6_XFrac
+           $c270 = wEntity7_DataPointer
+           $c270 = wEntity7
+           $c272 = wEntity7_YPos
+           $c273 = wEntity7_XPos
+           $c274 = wEntity7_YVel
+           $c275 = wEntity7_XVel
+           $c276 = wEntity7_CollisionData
+           $c277 = wEntity7_Health
+           $c278 = wEntity7_Direction
+           $c279 = wEntity7_Frame
+           $c27a = wEntity7_Flags
+           $c27b = wEntity7_State
+           $c27c = wEntity7_Timer
+           $c27d = wEntity7_InvTimer
+           $c27e = wEntity7_YFrac
+           $c27f = wEntity7_XFrac
+  SECTION: $c300-$c35f ($0060 bytes) ["Player Array"]
+           $c300 = wOctavia
+           $c300 = wPlayerArray
+           $c300 = wOctavia_DataPointer
+           $c302 = wOctavia_YPos
+           $c303 = wOctavia_XPos
+           $c304 = wOctavia_YVel
+           $c305 = wOctavia_XVel
+           $c306 = wOctavia_CollisionData
+           $c307 = wOctavia_Health
+           $c308 = wOctavia_Direction
+           $c309 = wOctavia_Frame
+           $c30a = wOctavia_Flags
+           $c30b = wOctavia_State
+           $c30c = wOctavia_Timer
+           $c30d = wOctavia_InvTimer
+           $c30e = wOctavia_YFrac
+           $c30f = wOctavia_XFrac
+           $c310 = wPoppy
+           $c310 = wPoppy_DataPointer
+           $c312 = wPoppy_YPos
+           $c313 = wPoppy_XPos
+           $c314 = wPoppy_YVel
+           $c315 = wPoppy_XVel
+           $c316 = wPoppy_CollisionData
+           $c317 = wPoppy_Health
+           $c318 = wPoppy_Direction
+           $c319 = wPoppy_Frame
+           $c31a = wPoppy_Flags
+           $c31b = wPoppy_State
+           $c31c = wPoppy_Timer
+           $c31d = wPoppy_InvTimer
+           $c31e = wPoppy_YFrac
+           $c31f = wPoppy_XFrac
+           $c320 = wTiber
+           $c320 = wTiber_DataPointer
+           $c322 = wTiber_YPos
+           $c323 = wTiber_XPos
+           $c324 = wTiber_YVel
+           $c325 = wTiber_XVel
+           $c326 = wTiber_CollisionData
+           $c327 = wTiber_Health
+           $c328 = wTiber_Direction
+           $c329 = wTiber_Frame
+           $c32a = wTiber_Flags
+           $c32b = wTiber_State
+           $c32c = wTiber_Timer
+           $c32d = wTiber_InvTimer
+           $c32e = wTiber_YFrac
+           $c32f = wTiber_XFrac
+           $c330 = wOctaviaSpell
+           $c330 = wOctaviaSpell_DataPointer
+           $c332 = wOctaviaSpell_YPos
+           $c333 = wOctaviaSpell_XPos
+           $c334 = wOctaviaSpell_YVel
+           $c335 = wOctaviaSpell_XVel
+           $c336 = wOctaviaSpell_CollisionData
+           $c337 = wOctaviaSpell_Health
+           $c338 = wOctaviaSpell_Direction
+           $c339 = wOctaviaSpell_Frame
+           $c33a = wOctaviaSpell_Flags
+           $c33b = wOctaviaSpell_State
+           $c33c = wOctaviaSpell_Timer
+           $c33d = wOctaviaSpell_InvTimer
+           $c33e = wOctaviaSpell_YFrac
+           $c33f = wOctaviaSpell_XFrac
+           $c340 = wPoppyArrow0
+           $c340 = wPoppyArrow0_DataPointer
+           $c342 = wPoppyArrow0_YPos
+           $c343 = wPoppyArrow0_XPos
+           $c344 = wPoppyArrow0_YVel
+           $c345 = wPoppyArrow0_XVel
+           $c346 = wPoppyArrow0_CollisionData
+           $c347 = wPoppyArrow0_Health
+           $c348 = wPoppyArrow0_Direction
+           $c349 = wPoppyArrow0_Frame
+           $c34a = wPoppyArrow0_Flags
+           $c34b = wPoppyArrow0_State
+           $c34c = wPoppyArrow0_Timer
+           $c34d = wPoppyArrow0_InvTimer
+           $c34e = wPoppyArrow0_YFrac
+           $c34f = wPoppyArrow0_XFrac
+           $c350 = wPoppyArrow1
+           $c350 = wPoppyArrow1_DataPointer
+           $c352 = wPoppyArrow1_YPos
+           $c353 = wPoppyArrow1_XPos
+           $c354 = wPoppyArrow1_YVel
+           $c355 = wPoppyArrow1_XVel
+           $c356 = wPoppyArrow1_CollisionData
+           $c357 = wPoppyArrow1_Health
+           $c358 = wPoppyArrow1_Direction
+           $c359 = wPoppyArrow1_Frame
+           $c35a = wPoppyArrow1_Flags
+           $c35b = wPoppyArrow1_State
+           $c35c = wPoppyArrow1_Timer
+           $c35d = wPoppyArrow1_InvTimer
+           $c35e = wPoppyArrow1_YFrac
+           $c35f = wPoppyArrow1_XFrac
+  SECTION: $c400-$c41f ($0020 bytes) ["NPC Array"]
+           $c400 = wNPCArray
+           $c400 = wNPC0_MetaspritesBank
+           $c400 = wNPC0
+           $c401 = wNPC0_Metasprites
+           $c403 = wNPC0_Direction
+           $c404 = wNPC0_Position
+           $c405 = wNPC0_ScriptBank
+           $c406 = wNPC0_Script
+           $c408 = wNPC1_MetaspritesBank
+           $c408 = wNPC1
+           $c409 = wNPC1_Metasprites
+           $c40b = wNPC1_Direction
+           $c40c = wNPC1_Position
+           $c40d = wNPC1_ScriptBank
+           $c40e = wNPC1_Script
+           $c410 = wNPC2_MetaspritesBank
+           $c410 = wNPC2
+           $c411 = wNPC2_Metasprites
+           $c413 = wNPC2_Direction
+           $c414 = wNPC2_Position
+           $c415 = wNPC2_ScriptBank
+           $c416 = wNPC2_Script
+           $c418 = wNPC3_MetaspritesBank
+           $c418 = wNPC3
+           $c419 = wNPC3_Metasprites
+           $c41b = wNPC3_Direction
+           $c41c = wNPC3_Position
+           $c41d = wNPC3_ScriptBank
+           $c41e = wNPC3_Script
+  SECTION: $c420-$c65f ($0240 bytes) ["Metatile Definitions"]
+           $c420 = wMetatileDefinitions
+           $c520 = wMetatileAttributes
+           $c620 = wMetatileData
+  SECTION: $c660-$c7e2 ($0183 bytes) ["Palettes"]
+           $c660 = wBGP
+           $c660 = wBCPD
+           $c661 = wOBP0
+           $c662 = wOBP1
+           $c6c0 = wOCPD
+           $c720 = wBCPDTarget
+           $c780 = wOCPDTarget
+           $c7e0 = wFadeSpeed
+           $c7e1 = wFadedShadeCount
+           $c7e2 = wTargetColor
+  SECTION: $c7e3-$c93e ($015c bytes) ["Menu system vars"]
+           $c7e3 = wNbMenus
+           $c7e4 = wMenu0
+           $c7e4 = wMenu0_Bank
+           $c7e5 = wMenu0_InitFunc
+           $c7e7 = wMenu0_ButtonMask
+           $c7e8 = wMenu0_EnableRepeatPress
+           $c7e9 = wMenu0_ButtonHooks
+           $c7f9 = wMenu0_PrevSelectedItem
+           $c7fa = wMenu0_AllowWrapping
+           $c7fb = wMenu0_SelectedItem
+           $c7fc = wMenu0_Size
+           $c7fd = wMenu0_RedrawFunc
+           $c7ff = wMenu0_ItemsPtr
+           $c801 = wMenu0_ClosingFunc
+           $c803 = wMenu0_RepeatPressCounter
+           $c803 = wMenu0_ROMSize
+           $c804 = wMenu0_MiscState
+           $c806 = wMenu1
+           $c806 = wMenu1_Bank
+           $c807 = wMenu1_InitFunc
+           $c809 = wMenu1_ButtonMask
+           $c80a = wMenu1_EnableRepeatPress
+           $c80b = wMenu1_ButtonHooks
+           $c81b = wMenu1_PrevSelectedItem
+           $c81c = wMenu1_AllowWrapping
+           $c81d = wMenu1_SelectedItem
+           $c81e = wMenu1_Size
+           $c81f = wMenu1_RedrawFunc
+           $c821 = wMenu1_ItemsPtr
+           $c823 = wMenu1_ClosingFunc
+           $c825 = wMenu1_ROMSize
+           $c825 = wMenu1_RepeatPressCounter
+           $c826 = wMenu1_MiscState
+           $c828 = wMenu2
+           $c828 = wMenu2_Bank
+           $c829 = wMenu2_InitFunc
+           $c82b = wMenu2_ButtonMask
+           $c82c = wMenu2_EnableRepeatPress
+           $c82d = wMenu2_ButtonHooks
+           $c83d = wMenu2_PrevSelectedItem
+           $c83e = wMenu2_AllowWrapping
+           $c83f = wMenu2_SelectedItem
+           $c840 = wMenu2_Size
+           $c841 = wMenu2_RedrawFunc
+           $c843 = wMenu2_ItemsPtr
+           $c845 = wMenu2_ClosingFunc
+           $c847 = wMenu2_RepeatPressCounter
+           $c847 = wMenu2_ROMSize
+           $c848 = wMenu2_MiscState
+           $c84a = wMenu3
+           $c84a = wMenu3_Bank
+           $c84b = wMenu3_InitFunc
+           $c84d = wMenu3_ButtonMask
+           $c84e = wMenu3_EnableRepeatPress
+           $c84f = wMenu3_ButtonHooks
+           $c85f = wMenu3_PrevSelectedItem
+           $c860 = wMenu3_AllowWrapping
+           $c861 = wMenu3_SelectedItem
+           $c862 = wMenu3_Size
+           $c863 = wMenu3_RedrawFunc
+           $c865 = wMenu3_ItemsPtr
+           $c867 = wMenu3_ClosingFunc
+           $c869 = wMenu3_ROMSize
+           $c869 = wMenu3_RepeatPressCounter
+           $c86a = wMenu3_MiscState
+           $c86c = wMenu4
+           $c86c = wMenu4_Bank
+           $c86d = wMenu4_InitFunc
+           $c86f = wMenu4_ButtonMask
+           $c870 = wMenu4_EnableRepeatPress
+           $c871 = wMenu4_ButtonHooks
+           $c881 = wMenu4_PrevSelectedItem
+           $c882 = wMenu4_AllowWrapping
+           $c883 = wMenu4_SelectedItem
+           $c884 = wMenu4_Size
+           $c885 = wMenu4_RedrawFunc
+           $c887 = wMenu4_ItemsPtr
+           $c889 = wMenu4_ClosingFunc
+           $c88b = wMenu4_RepeatPressCounter
+           $c88b = wMenu4_ROMSize
+           $c88c = wMenu4_MiscState
+           $c88e = wMenu5_Bank
+           $c88e = wMenu5
+           $c88f = wMenu5_InitFunc
+           $c891 = wMenu5_ButtonMask
+           $c892 = wMenu5_EnableRepeatPress
+           $c893 = wMenu5_ButtonHooks
+           $c8a3 = wMenu5_PrevSelectedItem
+           $c8a4 = wMenu5_AllowWrapping
+           $c8a5 = wMenu5_SelectedItem
+           $c8a6 = wMenu5_Size
+           $c8a7 = wMenu5_RedrawFunc
+           $c8a9 = wMenu5_ItemsPtr
+           $c8ab = wMenu5_ClosingFunc
+           $c8ad = wMenu5_RepeatPressCounter
+           $c8ad = wMenu5_ROMSize
+           $c8ae = wMenu5_MiscState
+           $c8b0 = wMenu6
+           $c8b0 = wMenu6_Bank
+           $c8b1 = wMenu6_InitFunc
+           $c8b3 = wMenu6_ButtonMask
+           $c8b4 = wMenu6_EnableRepeatPress
+           $c8b5 = wMenu6_ButtonHooks
+           $c8c5 = wMenu6_PrevSelectedItem
+           $c8c6 = wMenu6_AllowWrapping
+           $c8c7 = wMenu6_SelectedItem
+           $c8c8 = wMenu6_Size
+           $c8c9 = wMenu6_RedrawFunc
+           $c8cb = wMenu6_ItemsPtr
+           $c8cd = wMenu6_ClosingFunc
+           $c8cf = wMenu6_ROMSize
+           $c8cf = wMenu6_RepeatPressCounter
+           $c8d0 = wMenu6_MiscState
+           $c8d2 = wMenu7
+           $c8d2 = wMenu7_Bank
+           $c8d3 = wMenu7_InitFunc
+           $c8d5 = wMenu7_ButtonMask
+           $c8d6 = wMenu7_EnableRepeatPress
+           $c8d7 = wMenu7_ButtonHooks
+           $c8e7 = wMenu7_PrevSelectedItem
+           $c8e8 = wMenu7_AllowWrapping
+           $c8e9 = wMenu7_SelectedItem
+           $c8ea = wMenu7_Size
+           $c8eb = wMenu7_RedrawFunc
+           $c8ed = wMenu7_ItemsPtr
+           $c8ef = wMenu7_ClosingFunc
+           $c8f1 = wMenu7_ROMSize
+           $c8f1 = wMenu7_RepeatPressCounter
+           $c8f2 = wMenu7_MiscState
+           $c8f4 = wMenu8
+           $c8f4 = wMenu8_Bank
+           $c8f5 = wMenu8_InitFunc
+           $c8f7 = wMenu8_ButtonMask
+           $c8f8 = wMenu8_EnableRepeatPress
+           $c8f9 = wMenu8_ButtonHooks
+           $c909 = wMenu8_PrevSelectedItem
+           $c90a = wMenu8_AllowWrapping
+           $c90b = wMenu8_SelectedItem
+           $c90c = wMenu8_Size
+           $c90d = wMenu8_RedrawFunc
+           $c90f = wMenu8_ItemsPtr
+           $c911 = wMenu8_ClosingFunc
+           $c913 = wMenu8_RepeatPressCounter
+           $c913 = wMenu8_ROMSize
+           $c914 = wMenu8_MiscState
+           $c916 = wMenu9
+           $c916 = wMenu9_Bank
+           $c917 = wMenu9_InitFunc
+           $c919 = wMenu9_ButtonMask
+           $c91a = wMenu9_EnableRepeatPress
+           $c91b = wMenu9_ButtonHooks
+           $c92b = wMenu9_PrevSelectedItem
+           $c92c = wMenu9_AllowWrapping
+           $c92d = wMenu9_SelectedItem
+           $c92e = wMenu9_Size
+           $c92f = wMenu9_RedrawFunc
+           $c931 = wMenu9_ItemsPtr
+           $c933 = wMenu9_ClosingFunc
+           $c935 = wMenu9_RepeatPressCounter
+           $c935 = wMenu9_ROMSize
+           $c936 = wMenu9_MiscState
+           $c938 = wMenuAction
+           $c93c = wMenuClosingReason
+           $c93d = wPreviousMenuClosingReason
+           $c93e = wPreviousMenuItem
+  SECTION: $c93f-$ca3e ($0100 bytes) ["Tilemap"]
+           $c93f = wMetatileMap
+  SECTION: $ca3f-$cb3e ($0100 bytes) ["Map Data"]
+           $ca3f = wMapData
+  SECTION: $dfc0-$dfff ($0040 bytes) ["Stack"]
+           $e000 = wStackOrigin
+    SLACK: $15a1 bytes
+
+HRAM bank #0:
+  SECTION: $ff80-$ff87 ($0008 bytes) ["OAM DMA"]
+           $ff80 = hOAMDMA
+  SECTION: $ff88-$ff8b ($0004 bytes) ["Volatile"]
+           $ff88 = hRespawnEntitiesFlag
+           $ff89 = hLCDCBuffer
+           $ff89 = hWarpDataIndex
+           $ff89 = hNPCIndex
+           $ff8a = hMapBankBuffer
+           $ff8b = hMetatileBankBuffer
+           $ff88 = hLastBank
+           $ff88 = hCurrentTile
+           $ff89 = hSpellDamage
+           $ff8a = hSpellFrame
+           $ff88 = hCurrentTile
+           $ff88 = hCurrentTile
+           $ff88 = hNPCArrayIndex
+           $ff88 = hMoveAndSlideObstructed
+           $ff88 = hRenderByte
+           $ff88 = hHaltAlternate
+  SECTION: $ff8c-$ff8e ($0003 bytes) ["Engine Flags"]
+           $ff8c = hEngineState
+           $ff8d = hPaused
+           $ff8e = hSystem
+  SECTION: $ff8f-$ff91 ($0003 bytes) ["Register Buffers"]
+           $ff8f = hSCXBuffer
+           $ff90 = hSCYBuffer
+           $ff91 = hLCDCBuffer
+  SECTION: $ff92-$ff93 ($0002 bytes) ["hram_pads"]
+           $ff92 = hCurrentKeys
+           $ff93 = hNewKeys
+  SECTION: $ff94-$ff94 ($0001 byte) ["Render Info"]
+           $ff94 = hRenderByte
+  SECTION: $ff95-$ff95 ($0001 byte) ["Draw String"]
+           $ff95 = hDrawStringTileBase
+  SECTION: $ff96-$ff96 ($0001 byte) ["Current Bank"]
+           $ff96 = hCurrentBank
+  SECTION: $ff97-$ff97 ($0001 byte) ["Script Offset Byte"]
+           $ff97 = hScriptOffset
+  SECTION: $ff98-$ff98 ($0001 byte) ["OAM Index"]
+           $ff98 = hOAMIndex
+    SLACK: $0066 bytes
+
+USED:
+    ROM0: $25d2 bytes in 1 bank
+    ROMX: $40e2 bytes in 40 banks
+    SRAM: $009a bytes in 1 bank
+    WRAM0: $0a5f bytes in 1 bank
+    HRAM: $0019 bytes in 1 bank
